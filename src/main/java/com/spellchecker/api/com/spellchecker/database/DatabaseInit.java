@@ -15,7 +15,7 @@ public class DatabaseInit {
     @PostConstruct
     public void init() throws IOException {
         FileInputStream serviceAccount =
-                new FileInputStream("./resources/prvt-key.json");
+                new FileInputStream("/Users/nthabi/Desktop/Projects/demo/src/main/resources/prvt-key.json");
 
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))

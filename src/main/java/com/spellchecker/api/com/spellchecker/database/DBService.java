@@ -14,6 +14,6 @@ public class DBService {
     public String saveNewWord(String word) throws InterruptedException, ExecutionException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
         ApiFuture<WriteResult> collection = dbFirestore.collection("zulu-corpus").document().set(word);
-        return collection.get().getUpdateTime().toString();
+        return "Word saved!";
     }
 }
