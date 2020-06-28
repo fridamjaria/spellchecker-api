@@ -1,0 +1,23 @@
+The input file is a list of unique words that have been extracted 
+from zulumanu00001.txt. The last section (from line 2787) was excluded
+because it contained english text.
+
+The accuracy has assumed that all words given as input were correct.
+So it is an approximation, it might be higher or lower because:
+	1. There are words predicted to be correct but might be incorrect.
+	2. There are words predicted incorrect when they are correct.
+
+The accuracy needs a human intervention (expert zulu reader and writer maybe)
+to validate it.The text files are:
+1. Unique words from zulumanu00001.txt
+2. Words predicted to be correct.
+3. Words predicted to be incorrect.
+
+Otherwise assuming that all input words are correct, the findings are:
+Total unique words: 12453
+Predicted to be correct: 10347.0
+Predicted to be incorrect: 2106.0
+Accuracy is: 83.08841243073958 %
+
+Finally, since the application learns the language, its accuracy increases with use.
+That is the more it is used the higher the accuracy becomes.
