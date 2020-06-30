@@ -66,7 +66,6 @@ public class SpellcheckerFunctions extends ErrorCorrector {
      * Detects the errors of a word
      * returns: true if error was detected
      */
-    /**ADD ERROR CORRECTION TO THIS METHOD*/
     private boolean errorDetection(String word) {
         //Get trigrams of the word
         ArrayList<String> trigrams = wordTrigram(word);
@@ -165,7 +164,6 @@ public class SpellcheckerFunctions extends ErrorCorrector {
             String[] entry;
             while (line != null) {
                 entry = line.split(" ");//trigram and frequency
-                //sumFrequencies += Integer.parseInt(entry[1]);
                 trigramMap.put(entry[0], Integer.parseInt(entry[1]));
                 line = trigramReader.readLine();
             }
@@ -203,13 +201,12 @@ public class SpellcheckerFunctions extends ErrorCorrector {
             } else {
                 dictionary.add(word);
                 dictDatabas.append("\n" + word);
-                bw.write(dictDatabas.toString());\
+                bw.write(dictDatabas.toString());
             }
         } catch (IOException e) {
             Logger.getLogger(SpellcheckerFunctions.class.getName()).log(Level.SEVERE, null, e);
             JOptionPane.showMessageDialog(null, e);
-        }
-         finally {
+        } finally {
             try {
                 bw.close();
             } catch (IOException ex) {

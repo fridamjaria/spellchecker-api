@@ -16,7 +16,7 @@ public class SpellcheckerController {
 
     @PostMapping("/spellcheck")
     public boolean spellcheck(@PathVariable("userWord") String userWord){
-        SpellcheckerFunctions functions = new SpellcheckerFunctions();
+        SpellcheckerFunctions functions = new SpellcheckerFunctions("isizulu");
         return functions.errorDetection(userWord);
     }
 
