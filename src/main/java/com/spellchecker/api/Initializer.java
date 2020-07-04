@@ -48,11 +48,11 @@ public class Initializer {
             }
             wdlist.close();
 
-            //Load the trigram
+            //Load the trigram/freq map
             line = trigramReader.readLine();
             String[] entry;
             while (line != null) {
-                entry = line.split(" ");//trigram and frequency
+                entry = line.split(" ");
                 trigramMap.put(entry[0], Integer.parseInt(entry[1]));
                 line = trigramReader.readLine();
             }
