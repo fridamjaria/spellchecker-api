@@ -93,8 +93,8 @@ public class ErrorCorrector {
         }
     }
 
-    public ArrayList<String> correct(String sword) {
-        suggestions = new ArrayList<>();
+    public HashSet<String> correct(String sword) {
+        HashSet<String> suggestions = new HashSet<>();
 
         try {
             String word = sword.toLowerCase();
@@ -334,8 +334,8 @@ public class ErrorCorrector {
     }
 
     //method to find candidate corrections
-    public static ArrayList<String> createSugg(ArrayList<Trigram> arrTrig) {
-        ArrayList<String> wordSugg = new ArrayList<String>();
+    public static HashSet<String> createSugg(ArrayList<Trigram> arrTrig) {
+        HashSet<String> wordSugg = new HashSet<>();
         ArrayList<String> suggCombo; //stores substrings from combining suggestions - done to find corrections for deletion errors
         tempArr = new ArrayList<String>();
         for (int i = 0; i < arrTrig.size(); i++) {
@@ -357,7 +357,7 @@ public class ErrorCorrector {
                     }
                     for (String s : tempArr) {
                         if (wordlist.contains(s)) {
-                            if (s.length() != 3 && !wordSugg.contains(s)) {
+                            if (s.length() != 3) {
                                 wordSugg.add(s);
                             }
                         }
