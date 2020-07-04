@@ -30,29 +30,30 @@ public class SpellcheckerFunctions extends ErrorCorrector {
     }
 
     /*
-     * Checks word in wordlist before doing error detection
-     * returns true if correct
+     * Performs error detection and error correction on text body
+     * returns HashMap of incorrect words and their respective correction suggestions
      */
-    public boolean check(String word) {
-        String str = word;
+    public HashMap<String, HashSet<String>> check(String[] text) {
+        HashSet<String> incorrect_words = new HashSet<>();
+        HashMap<String, HashSet<String>> corrections = new HashMap<>();
 
-        //Removes non-Alphabetic last char
-        if (!Character.isLetter(str.charAt(word.length()-1))) {
-            str = word.substring(0,word.length()-1 );
-        }
+        for(String word : text) {
+            word = stripPunctuation(word);
 
-        if(str.length() < 3){
-            return true;
-        }
-        else if (search(str)) {
-            //finds word in wordlist or dictionary
-            return true;
-        } else {
-            //uses trigrams for a new word
-            return errorDetection(str);
-        }
+            if(!(word.length() < 3 || search(word))){
+                if (errorDetection(word)){
+                    incorrect_words.add(word);
+                }
+            }
+        };
+
+        incorrect_words.forEach(word -> {
+            corrections.put(word, createSuggestions(word));
+        });
+
+        return corrections;
     }
-    
+
     /*
      * Searches for a word from wordlist
      * returns true if word is in the wordlist
@@ -87,7 +88,16 @@ public class SpellcheckerFunctions extends ErrorCorrector {
                 error = true;
             }
         }
+
         return error;
+    }
+
+    /*
+     * Reads in a word
+     * returns: a set of suggestions for given word
+     */
+    private HashSet<String> createSuggestions(String word){
+        return correct(word);
     }
 
     /*
@@ -108,6 +118,18 @@ public class SpellcheckerFunctions extends ErrorCorrector {
             }
         }
         return strTri;
+    }
+
+    /*
+     * Reads a word
+     * returns: word with any trailing punctuation stripped
+     */
+    private String stripPunctuation(String word){
+        if (!Character.isLetter(word.charAt(word.length()-1))) {
+            return word.substring(0,word.length()-1 );
+        }
+
+        return word;
     }
 
     /*
