@@ -42,7 +42,7 @@ public class SpellcheckerFunctions extends Initializer {
      * returns: a set of suggestions for given word
      */
     private HashSet<String> createSuggestions(String word){
-        ErrorCorrector corrector = new ErrorCorrector();
-        return correct(word);
+        ErrorCorrector corrector = new ErrorCorrector(language);
+        return corrector.correct(word);
     }
 }
