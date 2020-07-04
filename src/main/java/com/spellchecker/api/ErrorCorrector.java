@@ -179,7 +179,6 @@ public class ErrorCorrector {
                         newWord = transposition(i, temp, arrTrig);
                         if (!newWord.isEmpty() && wordlist.contains(newWord)) {
                             suggestions.add(newWord);
-                            //true_negative++;
                         }
                         if (!suggestions.isEmpty()) {
                             break;
@@ -190,19 +189,6 @@ public class ErrorCorrector {
                     arrTrig.get(i).setSugg(targetArr);
                 }
             }
-
-//            int allCorrect = 0;
-//            if (suggestions.isEmpty()) { //if not transposition
-//                if (arrTrig.get(0).getSugg().isEmpty()) {
-//                    allCorrect++;
-//                    for (int i = 1; i < arrTrig.size(); i++) {
-//                        if (arrTrig.get(i).getAlt()) {
-//                            allCorrect++;
-//                        }
-//
-//                    }
-//                }
-//            }
 
             if (suggestions.isEmpty() && !alt) {
                 suggestions = createSugg(arrTrig);
@@ -342,18 +328,16 @@ public class ErrorCorrector {
                     for (String tri : suggestedTrigs) {
                         tempArr.add(tri);
                     }
+
                     suggCombo = combineSugg(suggestedTrigs);
                     if (!suggCombo.isEmpty()) {
                         for (String s : suggCombo) {
                             tempArr.add(s);
                         }
                     }
+
                     for (String s : tempArr) {
-                        if (wordlist.contains(s)) {
-                            if (s.length() > 3) {
-                                wordSugg.add(s);
-                            }
-                        }
+                        if (wordlist.contains(s) && s.length() > 3) wordSugg.add(s);
                     }
                 }
 
@@ -434,6 +418,7 @@ public class ErrorCorrector {
                         }
                     }
                 }
+
                 //remove strings that combinations have already been done on from tempArr
                 for (int m = 0; m < tempSize; m++) {
                     tempArr.remove(0);
