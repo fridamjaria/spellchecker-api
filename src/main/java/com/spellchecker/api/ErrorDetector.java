@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+/**
+ *
+ * @author fridamjaria
+ *
+ */
+
 public class ErrorDetector {
     private HashSet<String> wordlist = new HashSet<>();
     private HashMap<String, Integer> trigramMap;

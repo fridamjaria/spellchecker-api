@@ -25,6 +25,10 @@ public class ErrorCorrector {
     static ArrayList<String> suggestions;
     static boolean alt;
 
+    public ErrorCorrector(String language){
+        initCorrector(language);
+    }
+
     public void initCorrector(String language) {
         try {
             //create HashMap for Trigrams and arraylist for iterating through
@@ -200,7 +204,7 @@ public class ErrorCorrector {
             } else {
                 false_positive++;
             }
-        } catch (Exception e) {
+        }} catch (Exception e) {
             e.printStackTrace();
         }
         return suggestions;
@@ -320,9 +324,10 @@ public class ErrorCorrector {
         for (int i = 0; i < arrTrig.size(); i++) {
             Trigram trig = arrTrig.get(i);
             ArrayList<String> suggestedTrigs = trig.getSugg();
+            int size = suggestedTrigs.size();
 
             if (i == 0) {
-                if (suggestedTrigs.size() == 0) { //if trigram is correct
+                if (size == 0) { //if trigram is correct
                     tempArr.add(trig.getTri());
                 } else {
                     for (String tri : suggestedTrigs) {
