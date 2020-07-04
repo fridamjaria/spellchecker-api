@@ -11,6 +11,10 @@ import java.util.HashMap;
  */
 
 public class TriNext implements Serializable{
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 7460116597809101933L;
 	private ArrayList<String> array;
 	private HashMap<String, Integer> map;
 
@@ -18,11 +22,11 @@ public class TriNext implements Serializable{
 		this.array = arr;
 		this.map = hash;
 	}
-	
+
 	ArrayList<String> getArray(){
 		return this.array;
 	}
-	
+
 	HashMap<String, Integer> getMap(){
 		return this.map;
 	}

@@ -12,8 +12,8 @@ import java.util.concurrent.ExecutionException;
 public class DBService {
 
     public String saveNewWord(String word) throws InterruptedException, ExecutionException {
-        Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> collection = dbFirestore.collection("zulu-corpus").document().set(word);
+        // Firestore dbFirestore = FirestoreClient.getFirestore();
+        // ApiFuture<WriteResult> collection = dbFirestore.collection("zulu-corpus").document().set(word);
         return "Word saved!";
     }
 }

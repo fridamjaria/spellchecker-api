@@ -38,19 +38,18 @@ public class ErrorCorrector {
 
             //Set the language to be used by the corrector
             if (language.equalsIgnoreCase("isixhosa")) {
-                probs = SpellcheckerApplication.class.getResourceAsStream("text/xhosaTrigrams.txt");
-                words = SpellcheckerApplication.class.getResourceAsStream("text/xhosaWordlist.txt");
+                probs = SpellcheckerApplication.class.getResourceAsStream("/xhosaTrigrams.txt");
+                words = SpellcheckerApplication.class.getResourceAsStream("/xhosaWordlist.txt");
                 out = new File("xhosaCorrected.txt");
             } else {
-                probs = SpellcheckerApplication.class.getResourceAsStream("text/zuluTrigrams.txt");
-                words = SpellcheckerApplication.class.getResourceAsStream("text/zuluWordlist.txt");
+                probs = SpellcheckerApplication.class.getResourceAsStream("/zuluTrigrams.txt");
+                words = SpellcheckerApplication.class.getResourceAsStream("/zuluWordlist.txt");
                 out = new File("zuluCorrected.txt");
             }
 
             if (!out.exists()) {
                 out.createNewFile();
             }
-            BufferedWriter bw = new BufferedWriter(new FileWriter(out, true));
 
             BufferedReader probsReader = new BufferedReader(new InputStreamReader(probs));
             //Load the wordlist
@@ -126,16 +125,13 @@ public class ErrorCorrector {
             for (int i = 0; i < arrTrig.size(); i++) {
                 boolean correct = true;
                 String source = arrTrig.get(i).getTri();
-                //System.out.println(source + " " + hashTri.containsKey(source));
+
                 if (!hashTri.containsKey(source)) {
-                    //System.out.println(source);
                     correct = false;
                 }
                 if (correct) {
-                    //System.out.println(arrTrig.get(i).getTri());
                     if (i != 0) {
                         arrTrig.get(i).setAlt();
-                        //System.out.println(arrTrig.get(i).getTri());
                         String prevTri = arrTrig.get(i - 1).getTri();
                         //get TriNext object if the trigram occurs
                         if (hashAlt.containsKey(prevTri)) {
@@ -148,7 +144,6 @@ public class ErrorCorrector {
                         }
                     }
                 } else { //if any trigram is found to be incorrectly spelt
-                   // System.out.println(arrTrig.get(i).getTri());
                     char[] charArr = source.toCharArray();
                     int count = 0;
                     int start_index = 0;

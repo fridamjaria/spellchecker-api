@@ -19,9 +19,7 @@ public class Probabilities {
         this.language = langauge;
     }
 
-    
     static boolean upperCase(String s) {
-
         for (char c : s.toCharArray()) {
             if (!Character.isUpperCase(c)) {
                 return false;
@@ -38,19 +36,20 @@ public class Probabilities {
             //Set the langauge for which the probabilities is checked
             InputStream probs;
             if (language.equalsIgnoreCase("isixhosa")) {
-                probs = SpellcheckerApplication.class.getResourceAsStream("text/xhosaProbabilities.txt");
+                probs = SpellcheckerApplication.class.getResourceAsStream("/xhosaProbabilities.txt");
             } else {
-                probs = SpellcheckerApplication.class.getResourceAsStream("text/zuluProbabilities.txt");
+                probs = SpellcheckerApplication.class.getResourceAsStream("/zuluProbabilities.txt");
             }
 
             BufferedReader probsReader = new BufferedReader(new InputStreamReader(probs));
             //Load the wordlist
             String line = probsReader.readLine();
             HashMap<String, Integer> map;  //hashmap to get frequency of a trigram
+            Scanner scTri;
 
             while (line != null) {
                 map = new HashMap<>();
-                Scanner scTri = new Scanner(line);
+                scTri = new Scanner(line);
                 while (scTri.hasNext()) {
                     String tNext = scTri.next().trim();
                     int freq = scTri.nextInt();

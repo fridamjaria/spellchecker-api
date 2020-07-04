@@ -14,15 +14,15 @@ public class DatabaseInit {
 
     @PostConstruct
     public void init() throws IOException {
-        FileInputStream serviceAccount =
-                new FileInputStream("/Users/nthabi/Desktop/Projects/demo/src/main/resources/prvt-key.json");
+        // FileInputStream serviceAccount =
+        //         new FileInputStream("/Users/nthabi/Desktop/Projects/demo/src/main/resources/prvt-key.json");
 
-        FirebaseOptions options = new FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .setDatabaseUrl("https://isixhosa-plugin.firebaseio.com")
-                .build();
+        // FirebaseOptions options = new FirebaseOptions.Builder()
+        //         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+        //         .setDatabaseUrl("https://isixhosa-plugin.firebaseio.com")
+        //         .build();
 
-        FirebaseApp.initializeApp(options);
+        // FirebaseApp.initializeApp(options);
     }
 
 

@@ -142,22 +142,20 @@ public class SpellcheckerFunctions extends ErrorCorrector {
             File dict;
 
             if (language.equalsIgnoreCase("isixhosa")){
-                wdlist = SpellcheckerApplication.class.getResourceAsStream("resources/xhosaWordlist.txt");
-                tri = SpellcheckerApplication.class.getResourceAsStream("resources/xhosaTrigrams.txt");
+                wdlist = SpellcheckerApplication.class.getResourceAsStream("/xhosaWordlist.txt");
+                tri = SpellcheckerApplication.class.getResourceAsStream("/xhosaTrigrams.txt");
                 dict = new File("user_xhosa_dictionary");
 
             }else{
 
-                wdlist = SpellcheckerApplication.class.getResourceAsStream("resources/zuluWordlist.txt");
-                tri = SpellcheckerApplication.class.getResourceAsStream("resources/zuluTrigrams.txt");
+                wdlist = SpellcheckerApplication.class.getResourceAsStream("/zuluWordlist.txt");
+                tri = SpellcheckerApplication.class.getResourceAsStream("/zuluTrigrams.txt");
                 dict = new File("user_zulu_dictionary");
             }
 
 
             BufferedReader wdReader = new BufferedReader(new InputStreamReader(wdlist));
             BufferedReader trigramReader = new BufferedReader(new InputStreamReader(tri));
-
-
 
             // Load user dictionary if it exists
             String line;
