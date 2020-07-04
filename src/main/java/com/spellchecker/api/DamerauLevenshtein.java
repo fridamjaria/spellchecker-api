@@ -4,17 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /* Copyright (c) 2012 Kevin L. Stern
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,20 +28,20 @@ import java.util.Map;
  * The Damerau-Levenshtein Algorithm is an extension to the Levenshtein
  * Algorithm which solves the edit distance problem between a source string and
  * a target string with the following operations:
- * 
+ *
  * <ul>
  * <li>Character Insertion</li>
  * <li>Character Deletion</li>
  * <li>Character Replacement</li>
  * <li>Adjacent Character Swap</li>
  * </ul>
- * 
+ *
  * Note that the adjacent character swap operation is an edit that may be
  * applied when two adjacent characters in the source string match two adjacent
  * characters in the target string, but in reverse order, rather than a general
  * allowance for adjacent character swaps.
  * <p>
- * 
+ *
  * This implementation allows the client to specify the costs of the various
  * edit operations with the restriction that the cost of two swap operations
  * must not be less than the cost of a delete operation followed by an insert
@@ -49,19 +49,19 @@ import java.util.Map;
  * same character being required for optimality which, in turn, enables a fast
  * dynamic programming solution.
  * <p>
- * 
+ *
  * The running time of the Damerau-Levenshtein algorithm is O(n*m) where n is
  * the length of the source string and m is the length of the target string.
  * This implementation consumes O(n*m) space.
- * 
+ *
  * @author Kevin L. Stern
  */
-public class DamerauLevenshtein {
+public final class DamerauLevenshtein {
   private final int deleteCost, insertCost, replaceCost, swapCost;
 
   /**
    * Constructor.
-   * 
+   *
    * @param deleteCost
    *          the cost of deleting a character.
    * @param insertCost
