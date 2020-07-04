@@ -116,35 +116,4 @@ public class SpellcheckerFunctions extends ErrorCorrector {
             Logger.getLogger(SpellcheckerFunctions.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    /*
-     * Adds a new User word to user's personal dictionary
-     */
-    public void addWord(String word) {
-        BufferedWriter bw = null;
-        String file_name = language.equalsIgnoreCase("isixhosa") ? "user_xhosa_dictionary" : "user_zulu_dictionary";
-        File dict = new File(file_name);
-
-        try {
-            bw = new BufferedWriter(new FileWriter(dict));
-            if (!dict.exists() && dict.createNewFile()) {
-                dictionary.add(word);
-                dictDatabas.append(word);
-                bw.write(dictDatabas.toString());
-            } else {
-                dictionary.add(word);
-                dictDatabas.append("\n" + word);
-                bw.write(dictDatabas.toString());
-            }
-        } catch (IOException e) {
-            Logger.getLogger(SpellcheckerFunctions.class.getName()).log(Level.SEVERE, null, e);
-            JOptionPane.showMessageDialog(null, e);
-        } finally {
-            try {
-                bw.close();
-            } catch (IOException ex) {
-                Logger.getLogger(SpellcheckerFunctions.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
 }
