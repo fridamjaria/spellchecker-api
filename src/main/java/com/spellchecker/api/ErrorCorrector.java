@@ -32,7 +32,6 @@ public class ErrorCorrector {
             Probabilities prob = new Probabilities(language);
             hashAlt = prob.getProbMap();
             triArray = new ArrayList<>();
-            File out;
 
             InputStream probs, words;
 
@@ -40,15 +39,9 @@ public class ErrorCorrector {
             if (language.equalsIgnoreCase("isixhosa")) {
                 probs = SpellcheckerApplication.class.getResourceAsStream("/xhosaTrigrams.txt");
                 words = SpellcheckerApplication.class.getResourceAsStream("/xhosaWordlist.txt");
-                out = new File("xhosaCorrected.txt");
             } else {
                 probs = SpellcheckerApplication.class.getResourceAsStream("/zuluTrigrams.txt");
                 words = SpellcheckerApplication.class.getResourceAsStream("/zuluWordlist.txt");
-                out = new File("zuluCorrected.txt");
-            }
-
-            if (!out.exists()) {
-                out.createNewFile();
             }
 
             BufferedReader probsReader = new BufferedReader(new InputStreamReader(probs));
@@ -77,6 +70,7 @@ public class ErrorCorrector {
             wordlist = new HashSet<>();
 
             BufferedReader wordReader = new BufferedReader(new InputStreamReader(words));
+
             //Load the wordlist
             String wordsline = wordReader.readLine();
 
@@ -92,24 +86,23 @@ public class ErrorCorrector {
         }
     }
 
+    /*****
+     *
+     * @param sword
+     * @return set of corrections for given word
+     */
     public HashSet<String> correct(String sword) {
         HashSet<String> suggestions = new HashSet<>();
 
         try {
-            String word = sword.toLowerCase();
-            //check if the word is capitalized or the first letter is capitalized and change to lowercase
-            word = custom_lowercase(word);
+            String word = custom_lowercase(sword);
 
             //create trigram of word and store in an arrTrig
             int len = word.length();
             arrTrig = new ArrayList<>();
-            if (len >= 4) {
-                ArrayList<String> temp = triConstruct(word);
-                for (String s : temp) {
-                    trig = new Trigram(s);
-                    arrTrig.add(trig);
-                }
-            } else {
+            if (len >= 4) arrTrig = triConstruct(word);
+
+            else {
                 if (len == 1) {
                     trig = new Trigram(word + "xx");
                     arrTrig.add(trig);
@@ -159,7 +152,7 @@ public class ErrorCorrector {
                                 count = 0;
                             }
                         }
-                    }
+
                     if (count == 2) {
                         String temp = "";
                         switch (start_index) {
@@ -324,27 +317,32 @@ public class ErrorCorrector {
                 tempArr.add(target);
             }
         }
+
         Collections.sort(tempArr);
         return tempArr;
     }
 
-    //method to find candidate corrections
+    /**
+     *
+     * @param arrTrig
+     * @return Set of candidate corrections for misspelled word
+     */
     public static HashSet<String> createSugg(ArrayList<Trigram> arrTrig) {
         HashSet<String> wordSugg = new HashSet<>();
         ArrayList<String> suggCombo; //stores substrings from combining suggestions - done to find corrections for deletion errors
         tempArr = new ArrayList<String>();
         for (int i = 0; i < arrTrig.size(); i++) {
             Trigram trig = arrTrig.get(i);
-            int size = trig.getSugg().size();
+            ArrayList<String> suggestedTrigs = trig.getSugg();
+
             if (i == 0) {
-                if (size == 0) //if trigram is correct
-                {
+                if (suggestedTrigs.size() == 0) { //if trigram is correct
                     tempArr.add(trig.getTri());
                 } else {
-                    for (String tri : trig.getSugg()) {
+                    for (String tri : suggestedTrigs) {
                         tempArr.add(tri);
                     }
-                    suggCombo = combineSugg(trig.getSugg());
+                    suggCombo = combineSugg(suggestedTrigs);
                     if (!suggCombo.isEmpty()) {
                         for (String s : suggCombo) {
                             tempArr.add(s);
@@ -352,7 +350,7 @@ public class ErrorCorrector {
                     }
                     for (String s : tempArr) {
                         if (wordlist.contains(s)) {
-                            if (s.length() != 3) {
+                            if (s.length() > 3) {
                                 wordSugg.add(s);
                             }
                         }
@@ -362,7 +360,7 @@ public class ErrorCorrector {
             } else {
                 int tempSize = tempArr.size();
                 String tri = trig.getTri();
-                if (size == 0) { //if trigram is correct
+                if (suggestedTrigs.size() == 0) { //if trigram is correct
                     for (int j = 0; j < tempSize; j++) {
                         String str = tempArr.get(j);
                         String str_combine = combine(str, tri);
@@ -389,16 +387,15 @@ public class ErrorCorrector {
                                 int end = bs.findEnd(suggCombo, str, start, len);
                                 if (end < 0) {
                                     System.out.println("Something wrong with suggCombo from createSugg method.");
-                                    System.exit(0);
+                                    System.exit(-1);
                                 }
-                                //System.out.println("String: " + str);
+
                                 for (int k = start; k <= end; k++) {
                                     String str_combine = combine(str, suggCombo.get(k));
-                                    //System.out.println(str_combine);
+
                                     if (!str_combine.isEmpty()) {
                                         tempArr.add(str_combine);
                                         if (wordlist.contains(str_combine)) {
-                                            //System.out.println(str_combine);
                                             if (!wordSugg.contains(str_combine)) {
                                                 wordSugg.add(str_combine);
                                             }
@@ -408,6 +405,7 @@ public class ErrorCorrector {
                             }
                         }
                     }
+
                     //combine strings in tempArr with suggestions from trig.suggestions
                     ArrayList<String> sugg = trig.getSugg();
                     for (int j = 0; j < tempSize; j++) {
@@ -419,10 +417,9 @@ public class ErrorCorrector {
                                 System.out.println("Something wrong with suggCombo from createSugg method.");
                                 System.exit(0);
                             }
-                            //System.out.println("String: " + str);
+
                             for (int k = start; k <= end; k++) {
                                 if (i == 1) {
-                                    //System.out.println(sugg.get(k));
                                 }
                                 String str_combine = combine(str, sugg.get(k));
                                 if (!str_combine.isEmpty()) {
@@ -470,72 +467,35 @@ public class ErrorCorrector {
 
     static String combine(String s1, String s2) {
         String word = "";
-        //System.out.println(s1 + " " + s2);
         if (s1.substring(s1.length() - 2).equals(s2.substring(0, 2))) {
             word = s1.substring(0, s1.length() - 2) + s2;
-            //System.out.println(s1 + " " + s2);
         }
         return word;
     }
 
-    static ArrayList<String> triConstruct(String word) {
-        ArrayList<String> array = new ArrayList<String>();
-        int len = word.length();
+    /**
+     *
+     * @param word
+     * @return array with trigrams of word
+     */
+
+    static ArrayList<Trigram> triConstruct(String word) {
+        ArrayList<Trigram> array = new ArrayList<>();
         String tri = "";
-        for (int i = 0; i < len; i++) {
+
+        for (int i = 0; i < word.length(); i++) {
             if (word.substring(i).length() < 3) {
                 break;
             } else {
                 tri += word.charAt(i);
                 tri += word.charAt(i + 1);
                 tri += word.charAt(i + 2);
-                array.add(tri);
+                array.add(new Trigram(tri));
                 tri = "";
             }
         }
+
         return array;
-    }
-
-}
-
-class Trigram {
-
-    private String tri = "";
-    private ArrayList<String> suggestions;
-    private boolean alternatives;
-
-    public Trigram(String s) {
-        this.tri = s;
-        suggestions = new ArrayList<String>();
-        alternatives = false;
-    }
-
-    public Trigram(String s, ArrayList<String> a) {
-        this.tri = s;
-        this.suggestions = a;
-        alternatives = false;
-    }
-
-    public void setSugg(ArrayList<String> arr) {
-        for (String s : arr) {
-            this.suggestions.add(s);
-        }
-    }
-
-    public void setAlt() {
-        alternatives = true;
-    }
-
-    public String getTri() {
-        return this.tri;
-    }
-
-    public ArrayList<String> getSugg() {
-        return suggestions;
-    }
-
-    public boolean getAlt() {
-        return alternatives;
     }
 
 }
