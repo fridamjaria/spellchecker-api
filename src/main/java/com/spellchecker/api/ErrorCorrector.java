@@ -375,7 +375,6 @@ public class ErrorCorrector {
                             tempArr.add(str_combine);
                             //check if str_combine is in the wordlist, is it is store it as a suggestion
                             if (wordlist.contains(str_combine)) {
-                                //System.out.println(str_combine);
                                 if (!wordSugg.contains(str_combine)) {
                                     wordSugg.add(str_combine);
                                 }

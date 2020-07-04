@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author frdamjaria
+ * @author fridamjaria
  * @author Nthabi Mashiane
  *
  */
