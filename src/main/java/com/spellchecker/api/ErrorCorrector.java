@@ -12,17 +12,17 @@ import java.util.*;
 
 public class ErrorCorrector {
 
-    static Trigram trig;
-    static ArrayList<Trigram> arrTrig = null;
-    static ArrayList<String> tempArr;
-    static String[] triArray;
-    static HashMap<String, Integer> hashTri;
-    static HashMap<String, TriNext> hashAlt;
-    static HashSet<String> wordlist;
-    static DamerauLevenshtein DL;
-    static BinarySearch bs;
-    static ArrayList<String> suggestions;
-    static boolean alt;
+    Trigram trig;
+    ArrayList<Trigram> arrTrig = null;
+    ArrayList<String> tempArr;
+    String[] triArray;
+    HashMap<String, Integer> hashTri;
+    HashMap<String, TriNext> hashAlt;
+    HashSet<String> wordlist;
+    DamerauLevenshtein DL;
+    BinarySearch bs;
+    ArrayList<String> suggestions;
+    boolean alt;
     String language;
 
     public ErrorCorrector(String language, HashSet<String> wordlist, HashMap<String, Integer> probabilityMap){
@@ -158,7 +158,7 @@ public class ErrorCorrector {
         return suggestions;
     }
 
-    public static String custom_lowercase(String word) {
+    public String custom_lowercase(String word) {
         boolean upperCase = true;
         for (char c : word.toCharArray()) {
             if (!Character.isUpperCase(c)) {
@@ -173,7 +173,7 @@ public class ErrorCorrector {
         return word;
     }
 
-    public static String transposition(int index, String temp, ArrayList<Trigram> arrTrig) {
+    public String transposition(int index, String temp, ArrayList<Trigram> arrTrig) {
         if (hashTri.containsKey(temp)) {
             String combo = "";
             int size = arrTrig.size();
@@ -247,7 +247,7 @@ public class ErrorCorrector {
     }
 
     //method to find trigram suggestions for incorrect trigram
-    public static ArrayList<String> find(String source) {
+    public ArrayList<String> find(String source) {
         ArrayList<String> tempArr = new ArrayList<String>();
         for (String target : triArray) {
             int dist = DL.execute(source, target);
@@ -265,7 +265,7 @@ public class ErrorCorrector {
      * @param arrTrig
      * @return Set of candidate corrections for misspelled word
      */
-    public static HashSet<String> createSugg(ArrayList<Trigram> arrTrig) {
+    public HashSet<String> createSugg(ArrayList<Trigram> arrTrig) {
         HashSet<String> wordSugg = new HashSet<>();
         ArrayList<String> suggCombo; //stores substrings from combining suggestions - done to find corrections for deletion errors
         tempArr = new ArrayList<String>();
@@ -381,7 +381,7 @@ public class ErrorCorrector {
         return wordSugg;
     }
 
-    static ArrayList<String> combineSugg(ArrayList<String> sugg) {
+    ArrayList<String> combineSugg(ArrayList<String> sugg) {
         ArrayList<String> combo = new ArrayList<String>();
         int high = sugg.size() - 1;
         for (String s : sugg) {
@@ -403,7 +403,7 @@ public class ErrorCorrector {
         return combo;
     }
 
-    static String combine(String s1, String s2) {
+    String combine(String s1, String s2) {
         String word = "";
         if (s1.substring(s1.length() - 2).equals(s2.substring(0, 2))) {
             word = s1.substring(0, s1.length() - 2) + s2;
@@ -417,7 +417,7 @@ public class ErrorCorrector {
      * @return array with trigrams of word
      */
 
-    static ArrayList<Trigram> triConstruct(String word) {
+    ArrayList<Trigram> triConstruct(String word) {
         ArrayList<Trigram> array = new ArrayList<>();
         String tri = "";
 
