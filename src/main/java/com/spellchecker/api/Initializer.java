@@ -10,6 +10,12 @@ import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ *
+ * @author fridamjaria
+ *
+ */
+
 public class Initializer {
     public final HashMap<String, Integer> probabilityMap;
     public final HashSet<String> wordlist;
