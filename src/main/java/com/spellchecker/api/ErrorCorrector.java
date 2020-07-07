@@ -1,6 +1,7 @@
 package com.spellchecker.api;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -11,86 +12,39 @@ import java.util.*;
 
 public class ErrorCorrector {
 
-    static ArrayList<Trigram> arrTrig = null;
     static Trigram trig;
-    static int true_negative = 0;
-    static int false_positive = 0;
+    static ArrayList<Trigram> arrTrig = null;
     static ArrayList<String> tempArr;
-    static ArrayList<String> triArray;
+    static String[] triArray;
     static HashMap<String, Integer> hashTri;
     static HashMap<String, TriNext> hashAlt;
-    static Set<String> wordlist;
+    static HashSet<String> wordlist;
     static DamerauLevenshtein DL;
     static BinarySearch bs;
     static ArrayList<String> suggestions;
     static boolean alt;
+    String language;
 
-    public ErrorCorrector(String language){
-        initCorrector(language);
+    public ErrorCorrector(String language, HashSet<String> wordlist, HashMap<String, Integer> probabilityMap){
+        this.language = language;
+        wordlist = wordlist;
+        probabilityMap = probabilityMap;
+        triArray = probabilityMap.keySet().toArray(new String[probabilityMap.size()]);
+
+        initialize(language);
     }
 
-    public void initCorrector(String language) {
-        try {
-            //create HashMap for Trigrams and arraylist for iterating through
-            hashTri = new HashMap<>();
-            Probabilities prob = new Probabilities(language);
-            hashAlt = prob.getProbMap();
-            triArray = new ArrayList<>();
+    public void initialize(String language) {
+        //create HashMap for Trigrams and arraylist for iterating through
+        hashTri = new HashMap<>();
+        Probabilities prob = new Probabilities(language);
+        hashAlt = prob.getProbMap();
 
-            InputStream probs, words;
-
-            //Set the language to be used by the corrector
-            if (language.equalsIgnoreCase("isixhosa")) {
-                probs = SpellcheckerApplication.class.getResourceAsStream("/xhosaTrigrams.txt");
-                words = SpellcheckerApplication.class.getResourceAsStream("/xhosaWordlist.txt");
-            } else {
-                probs = SpellcheckerApplication.class.getResourceAsStream("/zuluTrigrams.txt");
-                words = SpellcheckerApplication.class.getResourceAsStream("/zuluWordlist.txt");
-            }
-
-            BufferedReader probsReader = new BufferedReader(new InputStreamReader(probs));
-            //Load the wordlist
-            String inputline = probsReader.readLine();
-
-            int threshold = 700; //IsiXhosa
-
-            //Set frequency for isiZulu
-            if (language.equalsIgnoreCase("isizulu")) {
-                threshold = 45;
-            }
-
-            while (inputline != null) {
-                String[] line = inputline.split(" ");
-                String tri = line[0];
-                int freq = Integer.parseInt(line[1]);
-                if (freq >= threshold) {
-                    hashTri.put(tri, freq);
-                    triArray.add(tri);
-                }
-                inputline = probsReader.readLine();
-            }
-
-            //create hashset for wordlist
-            wordlist = new HashSet<>();
-
-            BufferedReader wordReader = new BufferedReader(new InputStreamReader(words));
-
-            //Load the wordlist
-            String wordsline = wordReader.readLine();
-
-            while (wordsline != null) {
-                wordlist.add(wordsline.trim());
-                wordsline = wordReader.readLine();
-            }
-
-            DL = new DamerauLevenshtein(1, 1, 1, 2);
-            bs = new BinarySearch();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        DL = new DamerauLevenshtein(1, 1, 1, 2);
+        bs = new BinarySearch();
     }
 
-    /*****
+    /**
      *
      * @param sword
      * @return set of corrections for given word
@@ -197,12 +151,6 @@ public class ErrorCorrector {
             if (suggestions.isEmpty() && !alt) {
                 suggestions = createSugg(arrTrig);
 
-            }
-
-            if (!alt) {
-                true_negative++;
-            } else {
-                false_positive++;
             }
         }} catch (Exception e) {
             e.printStackTrace();

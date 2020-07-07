@@ -57,8 +57,8 @@ public class Initializer {
 
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
-        } catch (IOException ex) {
-            Logger.getLogger(SpellcheckerFunctions.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException e) {
+            Logger.getLogger(SpellcheckerFunctions.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
