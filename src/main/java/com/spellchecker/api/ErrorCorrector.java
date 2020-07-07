@@ -1,6 +1,7 @@
 package com.spellchecker.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,29 +56,27 @@ public class ErrorCorrector {
      */
     public HashSet<String> correct(String sword) {
         HashSet<String> suggestions = new HashSet<>();
-        ArrayList<Trigram> trigramsArray = new ArrayList<>();
+        ArrayList<Trigram> trigramsArray = null;
 
         try {
             String word = custom_lowercase(sword);
 
-            //create trigram of word and store in an trigramsArray
-            int len = word.length();
-
-            if (len >= 4){
+            // creates trigram of word and stores it in the trigramsArray
+            switch(word.length()) {
+                case 1:
+                trigramsArray = new ArrayList<>(Arrays.asList(new Trigram(word + "xx")));
+                break;
+                case 2:
+                trigramsArray = new ArrayList<>(Arrays.asList(new Trigram(word + "x")));
+                break;
+                case 3:
+                trigramsArray = new ArrayList<>(Arrays.asList(new Trigram(word)));
+                break;
+                default:
                 trigramsArray = constructTrigrams(word);
-            } else {
-                if (len == 1) {
-                    trig = new Trigram(word + "xx");
-                    trigramsArray.add(trig);
-                } else if (len == 2) {
-                    trig = new Trigram(word + "x");
-                    trigramsArray.add(trig);
-                } else if (len == 3) {
-                    trig = new Trigram(word);
-                    trigramsArray.add(trig);
-                }
             }
-            //check the trigrams are correct from list of trigrams
+
+            // check the trigrams are correct from list of trigrams
             for (int i = 0; i < trigramsArray.size(); i++) {
                 boolean correct = true;
                 String source = trigramsArray.get(i).getTri();
@@ -305,13 +304,13 @@ public class ErrorCorrector {
                 if (suggestedTrigs.size() == 0) { //if trigram is correct
                     for (int j = 0; j < tempSize; j++) {
                         String str = tempArr.get(j);
-                        String str_combine = combine(str, tri);
-                        if (!str_combine.isEmpty()) {
-                            tempArr.add(str_combine);
-                            //check if str_combine is in the wordlist, is it is store it as a suggestion
-                            if (wordlist.contains(str_combine)) {
-                                if (!wordSugg.contains(str_combine)) {
-                                    wordSugg.add(str_combine);
+                        String combined_str = combine(str, tri);
+                        if (!combined_str.isEmpty()) {
+                            tempArr.add(combined_str);
+                            //check if combined_str is in the wordlist, is it is store it as a suggestion
+                            if (wordlist.contains(combined_str)) {
+                                if (!wordSugg.contains(combined_str)) {
+                                    wordSugg.add(combined_str);
                                 }
                             }
                         }
@@ -333,13 +332,13 @@ public class ErrorCorrector {
                                 }
 
                                 for (int k = start; k <= end; k++) {
-                                    String str_combine = combine(str, suggCombo.get(k));
+                                    String combined_str = combine(str, suggCombo.get(k));
 
-                                    if (!str_combine.isEmpty()) {
-                                        tempArr.add(str_combine);
-                                        if (wordlist.contains(str_combine)) {
-                                            if (!wordSugg.contains(str_combine)) {
-                                                wordSugg.add(str_combine);
+                                    if (!combined_str.isEmpty()) {
+                                        tempArr.add(combined_str);
+                                        if (wordlist.contains(combined_str)) {
+                                            if (!wordSugg.contains(combined_str)) {
+                                                wordSugg.add(combined_str);
                                             }
                                         }
                                     }
@@ -363,12 +362,12 @@ public class ErrorCorrector {
                             for (int k = start; k <= end; k++) {
                                 if (i == 1) {
                                 }
-                                String str_combine = combine(str, sugg.get(k));
-                                if (!str_combine.isEmpty()) {
-                                    tempArr.add(str_combine);
-                                    if (wordlist.contains(str_combine)) {
-                                        if (!wordSugg.contains(str_combine)) {
-                                            wordSugg.add(str_combine);
+                                String combined_str = combine(str, sugg.get(k));
+                                if (!combined_str.isEmpty()) {
+                                    tempArr.add(combined_str);
+                                    if (wordlist.contains(combined_str)) {
+                                        if (!wordSugg.contains(combined_str)) {
+                                            wordSugg.add(combined_str);
                                         }
                                     }
                                 }
@@ -398,9 +397,9 @@ public class ErrorCorrector {
                     System.exit(0);
                 }
                 for (int i = start; i <= end; i++) {
-                    String str_combine = combine(s, sugg.get(i));
-                    if (!str_combine.isEmpty()) {
-                        combo.add(str_combine);
+                    String combined_str = combine(s, sugg.get(i));
+                    if (!combined_str.isEmpty()) {
+                        combo.add(combined_str);
                     }
                 }
             }
