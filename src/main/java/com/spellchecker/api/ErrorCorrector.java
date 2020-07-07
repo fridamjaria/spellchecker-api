@@ -1,8 +1,10 @@
 package com.spellchecker.api;
 
-import java.io.*;
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
 
 /**
  *
