@@ -12,22 +12,28 @@ import java.util.HashSet;
 
 public class ErrorDetector {
     private HashSet<String> wordlist = new HashSet<>();
-    private HashMap<String, Integer> trigramMap;
+    private HashMap<String, Integer> probabilityMap;
     private String language;
 
-    public ErrorDetector(String language, HashMap<String, Integer> trigramMap, HashSet<String> wordlist){
-        this.trigramMap = trigramMap;
+    public ErrorDetector(String language, HashMap<String, Integer> probabilityMap, HashSet<String> wordlist){
+        this.probabilityMap = probabilityMap;
         this.language = language;
         this.wordlist = wordlist;
     }
 
+    /**
+     *
+     * @param words
+     * Does the error detection
+     * @return hashset of misspelled words
+     */
     public HashSet<String> detectErrors(String[] words){
         HashSet<String> misspelledWords = new HashSet<>();
 
         for(String word : words) {
             word = stripPunctuation(word);
 
-            if(!(word.length() < 3 || search(word))){
+            if(!(word.length() < 3 || isInWordlist(word)) && isMispelled(word)){
                 misspelledWords.add(word);
 
             }
@@ -36,17 +42,21 @@ public class ErrorDetector {
         return misspelledWords;
     }
 
-    /*
-     * Gets the frequency of a trigram from a storage
-     * return: frequency of trigram
+    /**
+     *
+     * @param word
+     * Gets the frequency of a trigram from probabilityMap (default == 0 for trigrams not found)
+     * @return frequency of trigram
      */
     private int getFrequency(String trigram) {
-        return trigramMap.getOrDefault(trigram, 0);
+        return probabilityMap.getOrDefault(trigram, 0);
     }
 
-    /*
+    /**
+     *
+     * @param word
      * Reads a word
-     * returns: word with any trailing punctuation stripped
+     * @returns word with any trailing punctuation stripped
      */
     private String stripPunctuation(String word){
         if (!Character.isLetter(word.charAt(word.length()-1))) {
@@ -56,18 +66,23 @@ public class ErrorDetector {
         return word;
     }
 
-    /*
+    /**
+     *
+     * @param word
      * Searches for a word from wordlist
-     * returns true if word is in the wordlist
+     * @return true if word is in the wordlist || false otherwise
+     *
      */
-    private boolean search(String word) {
-
+    private boolean isInWordlist(String word) {
         return wordlist.contains(word);
     }
 
-    /*
+    /**
+     *
+     * @param word
      * Detects the errors of a word
-     * returns: true if error was detected
+     * @return true if error was detected || false otherwise
+     *
      */
     private boolean isMispelled(String word) {
         //Get trigrams of the word
@@ -94,9 +109,12 @@ public class ErrorDetector {
         return error;
     }
 
-    /*
-     * Reads a word word
-     * returns: a list of trigrams
+    /**
+     *
+     * @param word
+     * Breaks up a word into its trigram constituents
+     * @return a list of trigrams
+     *
      */
     private ArrayList<String> wordTrigram(String word) {
 
