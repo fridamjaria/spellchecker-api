@@ -11,8 +11,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Initializer {
-    public final HashMap<String, Integer> probabilityMap = new HashMap<>();
-    public final HashSet<String> wordlist = new HashSet<>();
+    public final HashMap<String, Integer> probabilityMap;
+    public final HashSet<String> wordlist;
+    public final String language;
+
+    public Initializer(String language) {
+        this.language = language;
+        this.wordlist = new HashSet<>();
+        this.probabilityMap = new HashMap<>();
+    }
 
     /**
      *
