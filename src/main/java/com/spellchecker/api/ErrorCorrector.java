@@ -18,32 +18,35 @@ public class ErrorCorrector {
     ArrayList<Trigram> arrTrig = null;
     ArrayList<String> tempArr;
     String[] triArray;
-    HashMap<String, Integer> hashTri;
-    HashMap<String, TriNext> hashAlt;
+    HashMap<String, Integer> probabilityMap;
+    /*
+     * This is a hashmap containing all trigrams in probabilityMap and other
+     * trigrams that they can be paired with (and the frequency
+     * that they were paired together in the corpus)
+     */
+    HashMap<String, TriNext> trigramPairs;
     HashSet<String> wordlist;
     DamerauLevenshtein DL;
-    BinarySearch bs;
+    BinarySearch BS;
     ArrayList<String> suggestions;
     boolean alt;
     String language;
 
     public ErrorCorrector(String language, HashSet<String> wordlist, HashMap<String, Integer> probabilityMap){
         this.language = language;
-        wordlist = wordlist;
-        probabilityMap = probabilityMap;
-        triArray = probabilityMap.keySet().toArray(new String[probabilityMap.size()]);
+        this.wordlist = wordlist;
+        this.probabilityMap = probabilityMap;
+        this.triArray = probabilityMap.keySet().toArray(new String[probabilityMap.size()]);
 
         initialize(language);
     }
 
     public void initialize(String language) {
-        //create HashMap for Trigrams and arraylist for iterating through
-        hashTri = new HashMap<>();
         Probabilities prob = new Probabilities(language);
-        hashAlt = prob.getProbMap();
+        trigramPairs = prob.getProbMap();
 
         DL = new DamerauLevenshtein(1, 1, 1, 2);
-        bs = new BinarySearch();
+        BS = new BinarySearch();
     }
 
     /**
@@ -79,7 +82,7 @@ public class ErrorCorrector {
                 boolean correct = true;
                 String source = arrTrig.get(i).getTri();
 
-                if (!hashTri.containsKey(source)) {
+                if (!probabilityMap.containsKey(source)) {
                     correct = false;
                 }
                 if (correct) {
@@ -87,8 +90,8 @@ public class ErrorCorrector {
                         arrTrig.get(i).setAlt();
                         String prevTri = arrTrig.get(i - 1).getTri();
                         //get TriNext object if the trigram occurs
-                        if (hashAlt.containsKey(prevTri)) {
-                            TriNext tn = hashAlt.get(prevTri);
+                        if (trigramPairs.containsKey(prevTri)) {
+                            TriNext tn = trigramPairs.get(prevTri);
                             ArrayList<String> nextTris = tn.getArray();
                             HashMap<String, Integer> probNext = tn.getMap();
                             if (probNext.containsKey(source)) {
@@ -176,7 +179,7 @@ public class ErrorCorrector {
     }
 
     public String transposition(int index, String temp, ArrayList<Trigram> arrTrig) {
-        if (hashTri.containsKey(temp)) {
+        if (probabilityMap.containsKey(temp)) {
             String combo = "";
             int size = arrTrig.size();
 
@@ -321,9 +324,9 @@ public class ErrorCorrector {
                         for (int j = 0; j < tempSize; j++) {
                             String str = tempArr.get(j);
 
-                            int start = bs.findStart(suggCombo, str, 0, len);
+                            int start = BS.findStart(suggCombo, str, 0, len);
                             if (!(start < 0)) {
-                                int end = bs.findEnd(suggCombo, str, start, len);
+                                int end = BS.findEnd(suggCombo, str, start, len);
                                 if (end < 0) {
                                     System.out.println("Something wrong with suggCombo from createSugg method.");
                                     System.exit(-1);
@@ -349,9 +352,9 @@ public class ErrorCorrector {
                     ArrayList<String> sugg = trig.getSugg();
                     for (int j = 0; j < tempSize; j++) {
                         String str = tempArr.get(j);
-                        int start = bs.findStart(sugg, str, 0, size - 1);
+                        int start = BS.findStart(sugg, str, 0, size - 1);
                         if (!(start < 0)) {
-                            int end = bs.findEnd(sugg, str, start, size - 1);
+                            int end = BS.findEnd(sugg, str, start, size - 1);
                             if (end < 0) {
                                 System.out.println("Something wrong with suggCombo from createSugg method.");
                                 System.exit(0);
@@ -387,9 +390,9 @@ public class ErrorCorrector {
         ArrayList<String> combo = new ArrayList<String>();
         int high = sugg.size() - 1;
         for (String s : sugg) {
-            int start = bs.findStart(sugg, s, 0, high);
+            int start = BS.findStart(sugg, s, 0, high);
             if (!(start < 0)) {
-                int end = bs.findEnd(sugg, s, start, high);
+                int end = BS.findEnd(sugg, s, start, high);
                 if (end < 0) {
                     System.out.println("Something wrong with combineSugg");
                     System.exit(0);
