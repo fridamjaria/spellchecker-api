@@ -15,7 +15,6 @@ import java.util.Locale;
 public class ErrorCorrector {
 
     Trigram trig;
-    ArrayList<Trigram> arrTrig = null;
     ArrayList<String> tempArr;
     String[] triArray;
     HashMap<String, Integer> probabilityMap;
@@ -56,46 +55,47 @@ public class ErrorCorrector {
      */
     public HashSet<String> correct(String sword) {
         HashSet<String> suggestions = new HashSet<>();
+        ArrayList<Trigram> trigramsArray = new ArrayList<>();
 
         try {
             String word = custom_lowercase(sword);
 
-            //create trigram of word and store in an arrTrig
+            //create trigram of word and store in an trigramsArray
             int len = word.length();
-            arrTrig = new ArrayList<>();
-            if (len >= 4) arrTrig = triConstruct(word);
 
-            else {
+            if (len >= 4){
+                trigramsArray = constructTrigrams(word);
+            } else {
                 if (len == 1) {
                     trig = new Trigram(word + "xx");
-                    arrTrig.add(trig);
+                    trigramsArray.add(trig);
                 } else if (len == 2) {
                     trig = new Trigram(word + "x");
-                    arrTrig.add(trig);
+                    trigramsArray.add(trig);
                 } else if (len == 3) {
                     trig = new Trigram(word);
-                    arrTrig.add(trig);
+                    trigramsArray.add(trig);
                 }
             }
             //check the trigrams are correct from list of trigrams
-            for (int i = 0; i < arrTrig.size(); i++) {
+            for (int i = 0; i < trigramsArray.size(); i++) {
                 boolean correct = true;
-                String source = arrTrig.get(i).getTri();
+                String source = trigramsArray.get(i).getTri();
 
                 if (!probabilityMap.containsKey(source)) {
                     correct = false;
                 }
                 if (correct) {
                     if (i != 0) {
-                        arrTrig.get(i).setAlt();
-                        String prevTri = arrTrig.get(i - 1).getTri();
+                        trigramsArray.get(i).setAlt();
+                        String prevTri = trigramsArray.get(i - 1).getTri();
                         //get TriNext object if the trigram occurs
                         if (trigramPairs.containsKey(prevTri)) {
                             TriNext tn = trigramPairs.get(prevTri);
                             ArrayList<String> nextTris = tn.getArray();
                             HashMap<String, Integer> probNext = tn.getMap();
                             if (probNext.containsKey(source)) {
-                                arrTrig.get(i).setSugg(nextTris);
+                                trigramsArray.get(i).setSugg(nextTris);
                             }
                         }
                     }
@@ -130,16 +130,16 @@ public class ErrorCorrector {
                                 break;
                         }
 
-                        String newWord = transposition(i, temp, arrTrig);
+                        String newWord = transposition(i, temp, trigramsArray);
                         if (!newWord.isEmpty() && wordlist.contains(newWord)) {
                             suggestions.add(newWord);
                             break;
                         }
                     } else if (count == 3) {
                         String temp = new StringBuilder().append(charArr[1]).append(charArr[0]).append(charArr[2]).toString();
-                        String newWord = transposition(i, temp, arrTrig);
+                        String newWord = transposition(i, temp, trigramsArray);
                         temp = new StringBuilder().append(charArr[0]).append(charArr[2]).append(charArr[1]).toString();
-                        newWord = transposition(i, temp, arrTrig);
+                        newWord = transposition(i, temp, trigramsArray);
                         if (!newWord.isEmpty() && wordlist.contains(newWord)) {
                             suggestions.add(newWord);
                         }
@@ -149,12 +149,12 @@ public class ErrorCorrector {
                     }
 
                     ArrayList<String> targetArr = find(source);
-                    arrTrig.get(i).setSugg(targetArr);
+                    trigramsArray.get(i).setSugg(targetArr);
                 }
             }
 
             if (suggestions.isEmpty() && !alt) {
-                suggestions = createSugg(arrTrig);
+                suggestions = createSugg(trigramsArray);
 
             }
         }} catch (Exception e) {
@@ -178,18 +178,18 @@ public class ErrorCorrector {
         return word;
     }
 
-    public String transposition(int index, String temp, ArrayList<Trigram> arrTrig) {
+    public String transposition(int index, String temp, ArrayList<Trigram> trigramsArray) {
         if (probabilityMap.containsKey(temp)) {
             String combo = "";
-            int size = arrTrig.size();
+            int size = trigramsArray.size();
 
             if (index == 0 && index < size - 1) { //if 1st element and array has more than 1 element
-                combo = temp + arrTrig.get(index + 1).getTri().substring(2);
+                combo = temp + trigramsArray.get(index + 1).getTri().substring(2);
                 if (index + 2 < size) {
-                    combo += arrTrig.get(index + 2).getTri().substring(2);
+                    combo += trigramsArray.get(index + 2).getTri().substring(2);
 
                     for (int i = index + 3; i < size; i++) {
-                        combo = combine(combo, arrTrig.get(i).getTri());
+                        combo = combine(combo, trigramsArray.get(i).getTri());
                         if (combo.isEmpty()) {
                             break;
                         }
@@ -200,22 +200,22 @@ public class ErrorCorrector {
             } else if (index == size - 1 && size != 1) { //if last element and array has more than one element
                 for (int i = 0; i < index - 1; i++) {
                     if (i == 0) {
-                        combo = arrTrig.get(0).getTri();
+                        combo = trigramsArray.get(0).getTri();
                     } else {
-                        combo = combine(combo, arrTrig.get(i).getTri());
+                        combo = combine(combo, trigramsArray.get(i).getTri());
                     }
                     if (combo.isEmpty()) {
                         return combo;
                     }
                 }
-                combo += arrTrig.get(index - 1).getTri().substring(0, 1) + temp;
+                combo += trigramsArray.get(index - 1).getTri().substring(0, 1) + temp;
                 return combo;
             } else if (index > 0) { //if index is somewhere in the middle
                 for (int i = 0; i < index - 1; i++) {
                     if (i == 0) {
-                        combo = arrTrig.get(0).getTri();
+                        combo = trigramsArray.get(0).getTri();
                     } else {
-                        combo = combine(combo, arrTrig.get(i).getTri());
+                        combo = combine(combo, trigramsArray.get(i).getTri());
 
                     }
                     if (combo.isEmpty()) {
@@ -225,9 +225,9 @@ public class ErrorCorrector {
                 }
 
                 if (combo.isEmpty()) {
-                    combo = arrTrig.get(index - 1).getTri().substring(0, 1) + temp + arrTrig.get(index + 1).getTri().substring(2);
+                    combo = trigramsArray.get(index - 1).getTri().substring(0, 1) + temp + trigramsArray.get(index + 1).getTri().substring(2);
                 } else {
-                    combo = combine(combo, arrTrig.get(index - 1).getTri().substring(0, 1) + temp + arrTrig.get(index + 1).getTri().substring(2));
+                    combo = combine(combo, trigramsArray.get(index - 1).getTri().substring(0, 1) + temp + trigramsArray.get(index + 1).getTri().substring(2));
                 }
 
                 if (combo.isEmpty()) {
@@ -236,9 +236,9 @@ public class ErrorCorrector {
 
                 for (int i = index + 2; i < size; i++) {
                     if (i == index + 2) {
-                        combo += arrTrig.get(i).getTri().substring(2);
+                        combo += trigramsArray.get(i).getTri().substring(2);
                     } else {
-                        combo = combine(combo, arrTrig.get(i).getTri());
+                        combo = combine(combo, trigramsArray.get(i).getTri());
                     }
                     if (combo.isEmpty()) {
                         break;
@@ -267,15 +267,15 @@ public class ErrorCorrector {
 
     /**
      *
-     * @param arrTrig
+     * @param trigramsArray
      * @return Set of candidate corrections for misspelled word
      */
-    public HashSet<String> createSugg(ArrayList<Trigram> arrTrig) {
+    public HashSet<String> createSugg(ArrayList<Trigram> trigramsArray) {
         HashSet<String> wordSugg = new HashSet<>();
         ArrayList<String> suggCombo; //stores substrings from combining suggestions - done to find corrections for deletion errors
         tempArr = new ArrayList<String>();
-        for (int i = 0; i < arrTrig.size(); i++) {
-            Trigram trig = arrTrig.get(i);
+        for (int i = 0; i < trigramsArray.size(); i++) {
+            Trigram trig = trigramsArray.get(i);
             ArrayList<String> suggestedTrigs = trig.getSugg();
             int size = suggestedTrigs.size();
 
@@ -422,7 +422,7 @@ public class ErrorCorrector {
      * @return array with trigrams of word
      */
 
-    ArrayList<Trigram> triConstruct(String word) {
+    ArrayList<Trigram> constructTrigrams(String word) {
         ArrayList<Trigram> array = new ArrayList<>();
         String tri = "";
 
