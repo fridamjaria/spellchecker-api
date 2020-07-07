@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Locale;
 
 /**
  *
@@ -103,13 +102,10 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
                         if ("AEIOUaeiou".indexOf(c) == -1) {
                             if (count == 0) {
                                 start_index = a;
-                            }
                             count++;
-                        } else {
-                            if (count == 1) {
-                                count = 0;
-                            }
+                            } else if (count == 1) count = 0;
                         }
+
 
                     if (count == 2) {
                         String temp = "";
@@ -125,16 +121,16 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
                                 break;
                         }
 
-                        String newWord = transposition(i, temp, trigramsArray, probabilityMap);
+                        String newWord = transpose(i, temp, trigramsArray, probabilityMap);
                         if (!newWord.isEmpty() && wordlist.contains(newWord)) {
                             suggestions.add(newWord);
                             break;
                         }
                     } else if (count == 3) {
                         String temp = new StringBuilder().append(charArr[1]).append(charArr[0]).append(charArr[2]).toString();
-                        String newWord = transposition(i, temp, trigramsArray, probabilityMap);
+                        String newWord = transpose(i, temp, trigramsArray, probabilityMap);
                         temp = new StringBuilder().append(charArr[0]).append(charArr[2]).append(charArr[1]).toString();
-                        newWord = transposition(i, temp, trigramsArray, probabilityMap);
+                        newWord = transpose(i, temp, trigramsArray, probabilityMap);
                         if (!newWord.isEmpty() && wordlist.contains(newWord)) {
                             suggestions.add(newWord);
                         }

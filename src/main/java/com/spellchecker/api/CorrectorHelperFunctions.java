@@ -99,7 +99,7 @@ public class CorrectorHelperFunctions {
         return tempArr;
     }
 
-    public String transposition(int index, String temp, ArrayList<Trigram> trigramsArray, HashMap<String, Integer> probabilityMap) {
+    public String transpose(int index, String temp, ArrayList<Trigram> trigramsArray, HashMap<String, Integer> probabilityMap) {
         if (probabilityMap.containsKey(temp)) {
             String combo = "";
             int size = trigramsArray.size();
