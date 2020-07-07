@@ -10,12 +10,14 @@ import java.util.HashSet;
  *
  */
 
-public class SpellcheckerFunctions extends Initializer {
+public class SpellcheckerFunctions{
     private final String language;
+    private final Initializer initializer;
 
     public SpellcheckerFunctions(String language) {
         this.language = language;
-        initializeDataStructures(this.language);
+        this.initializer = new Initializer(this.language);
+        initializer.initializeDataStructures();
     }
 
     /*
@@ -23,7 +25,7 @@ public class SpellcheckerFunctions extends Initializer {
      * returns HashMap of incorrect words and their respective correction suggestions
      */
     public HashMap<String, HashSet<String>> check(String[] text) {
-        ErrorDetector detector = new ErrorDetector(language, trigramMap, wordlist);
+        ErrorDetector detector = new ErrorDetector(language, initializer.probabilityMap, initializer.wordlist);
         HashSet<String> incorrect_words = detector.detectErrors(text);
         HashMap<String, HashSet<String>> corrections = new HashMap<>();
 
@@ -39,7 +41,7 @@ public class SpellcheckerFunctions extends Initializer {
      * returns: a set of suggestions for given word
      */
     private HashSet<String> createSuggestions(String word){
-        ErrorCorrector corrector = new ErrorCorrector(language);
+        ErrorCorrector corrector = new ErrorCorrector(language, initializer.wordlist, initializer.probabilityMap);
         return corrector.correct(word);
     }
 }

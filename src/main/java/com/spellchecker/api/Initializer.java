@@ -34,7 +34,7 @@ public class Initializer {
      * for quick access for the specified language.
      *
      */
-    public final void initializeDataStructures(String language) {
+    public final void initializeDataStructures() {
         InputStream wordsInStream;
         InputStream probsInStream;
         int threshold;
