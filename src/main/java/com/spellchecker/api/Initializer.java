@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Initializer {
-    public final HashMap<String, Integer> trigramMap = new HashMap<>();
+    public final HashMap<String, Integer> probabilityMap = new HashMap<>();
     public final HashSet<String> wordlist = new HashSet<>();
 
     /**
@@ -22,46 +22,84 @@ public class Initializer {
      *
      */
     public final void initializeDataStructures(String language) {
-        try {
-            InputStream wdlist;
-            InputStream tri;
+        InputStream wordsInStream;
+        InputStream probsInStream;
+        int threshold;
 
+        try {
             if (language.equalsIgnoreCase("isixhosa")){
-                wdlist = SpellcheckerApplication.class.getResourceAsStream("/xhosaWordlist.txt");
-                tri = SpellcheckerApplication.class.getResourceAsStream("/xhosaTrigrams.txt");
+                wordsInStream = SpellcheckerApplication.class.getResourceAsStream("/xhosaWordlist.txt");
+                probsInStream = SpellcheckerApplication.class.getResourceAsStream("/xhosaTrigrams.txt");
+                threshold = 700;
 
             }else{
-
-                wdlist = SpellcheckerApplication.class.getResourceAsStream("/zuluWordlist.txt");
-                tri = SpellcheckerApplication.class.getResourceAsStream("/zuluTrigrams.txt");
+                wordsInStream = SpellcheckerApplication.class.getResourceAsStream("/zuluWordlist.txt");
+                probsInStream = SpellcheckerApplication.class.getResourceAsStream("/zuluTrigrams.txt");
+                threshold = 45;
             }
 
+            populateWordlist(wordsInStream);
+            populateProbabilityMap(probsInStream, threshold);
 
-            BufferedReader wdReader = new BufferedReader(new InputStreamReader(wdlist));
-            BufferedReader trigramReader = new BufferedReader(new InputStreamReader(tri));
-
-            //Load the wordlist
-            String line = wdReader.readLine();
-            while (line != null) {
-                wordlist.add(line.trim());
-                line = wdReader.readLine();
-            }
-            wdlist.close();
-
-            //Load the trigram/freq map
-            line = trigramReader.readLine();
-            String[] entry;
-            while (line != null) {
-                entry = line.split(" ");
-                trigramMap.put(entry[0], Integer.parseInt(entry[1]));
-                line = trigramReader.readLine();
-            }
-            tri.close();
 
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
         } catch (IOException ex) {
             Logger.getLogger(SpellcheckerFunctions.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     *
+     * @param stream
+     * @throws IOException
+     * Populates wordlist with words input stream data
+     *
+     */
+    private void populateWordlist(InputStream stream) throws IOException {
+        BufferedReader wdReader = new BufferedReader(new InputStreamReader(stream));
+
+        try {
+            String line = wdReader.readLine();
+            while (line != null) {
+                wordlist.add(line.trim());
+                line = wdReader.readLine();
+            }
+            wdReader.close();
+        } catch(IOException e){
+            throw e;
+        }
+    }
+
+
+    /**
+     *
+     * @param stream
+     * @throws IOException
+     * Populates probabilitiesMap with trigrams that have a freq >= threshold
+     *
+     */
+    private void populateProbabilityMap(InputStream stream, int threshold) throws IOException {
+        BufferedReader probsReader = new BufferedReader(new InputStreamReader(stream));
+
+        try {
+            String[] entry;
+            String trigram;
+            int freq;
+
+            String line = probsReader.readLine();
+            while (line != null) {
+                entry = line.split(" ");
+                trigram = entry[0];
+                freq = Integer.parseInt(entry[1]);
+
+                if(freq >= threshold) probabilityMap.put(trigram, freq);
+                line = probsReader.readLine();
+            }
+
+            probsReader.close();
+        } catch(IOException e){
+            throw e;
         }
     }
 }
