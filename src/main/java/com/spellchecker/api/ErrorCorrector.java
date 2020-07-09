@@ -51,38 +51,38 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
      */
     public HashSet<String> correct(String sword) {
         HashSet<String> suggestions = new HashSet<>();
-        ArrayList<Trigram> trigramsArray = null;
+        ArrayList<Trigram> wordTrigrams = null;
 
         try {
             String word = custom_lowercase(sword);
 
-            // creates trigram of word and stores it in the trigramsArray
+            // creates trigram of word and stores it in the wordTrigrams
             switch(word.length()) {
                 case 1:
-                trigramsArray = new ArrayList<>(Arrays.asList(new Trigram(word + "xx")));
+                wordTrigrams = new ArrayList<>(Arrays.asList(new Trigram(word + "xx")));
                 break;
                 case 2:
-                trigramsArray = new ArrayList<>(Arrays.asList(new Trigram(word + "x")));
+                wordTrigrams = new ArrayList<>(Arrays.asList(new Trigram(word + "x")));
                 break;
                 case 3:
-                trigramsArray = new ArrayList<>(Arrays.asList(new Trigram(word)));
+                wordTrigrams = new ArrayList<>(Arrays.asList(new Trigram(word)));
                 break;
                 default:
-                trigramsArray = constructTrigrams(word);
+                wordTrigrams = constructTrigrams(word);
             }
 
             // check the trigrams are correct from list of trigrams
-            for (int i = 0; i < trigramsArray.size(); i++) {
-                Trigram trigObj = trigramsArray.get(i);
+            for (int i = 0; i < wordTrigrams.size(); i++) {
+                Trigram trigObj = wordTrigrams.get(i);
                 String trigram = trigObj.getTri();
 
                 if (isValidTrigram(trigram)) {
-                    int index = trigramsArray.indexOf(trigObj);
+                    int index = wordTrigrams.indexOf(trigObj);
                     if (index != 0) {
                         trigObj.setAlt(); // what does this do??????? --- trigObj.alternatives is set to true, why?
 
                         // Grab the previous trigObj to this current trigObj
-                        String prevTri = trigramsArray.get(index - 1).getTri();
+                        String prevTri = wordTrigrams.get(index - 1).getTri();
 
                         if (trigramPairs.containsKey(prevTri)) { // if the previous trigObj is contained in pairs hashmap
                             TriNext tn = trigramPairs.get(prevTri); //grab the object containing all info for possible trigNextObj pairs
@@ -121,16 +121,16 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
                                 break;
                         }
 
-                        String newWord = transpose(i, temp, trigramsArray, probabilityMap);
+                        String newWord = transpose(i, temp, wordTrigrams, probabilityMap);
                         if (!newWord.isEmpty() && wordlist.contains(newWord)) {
                             suggestions.add(newWord);
                             break;
                         }
                     } else if (count == 3) {
                         String temp = new StringBuilder().append(charArr[1]).append(charArr[0]).append(charArr[2]).toString();
-                        String newWord = transpose(i, temp, trigramsArray, probabilityMap);
+                        String newWord = transpose(i, temp, wordTrigrams, probabilityMap);
                         temp = new StringBuilder().append(charArr[0]).append(charArr[2]).append(charArr[1]).toString();
-                        newWord = transpose(i, temp, trigramsArray, probabilityMap);
+                        newWord = transpose(i, temp, wordTrigrams, probabilityMap);
                         if (!newWord.isEmpty() && wordlist.contains(newWord)) {
                             suggestions.add(newWord);
                         }
@@ -140,12 +140,12 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
                     }
 
                     ArrayList<String> targetArr = find(triArray, trigram);
-                    trigramsArray.get(i).setSugg(targetArr);
+                    wordTrigrams.get(i).setSugg(targetArr);
                 }
             }
 
             if (suggestions.isEmpty() && !alt) {
-                suggestions = createSugg(trigramsArray);
+                suggestions = createSugg(wordTrigrams);
 
             }
         }} catch (Exception e) {
@@ -156,15 +156,15 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
 
     /**
      *
-     * @param trigramsArray
+     * @param wordTrigrams
      * @return Set of candidate corrections for misspelled word
      */
-    public HashSet<String> createSugg(ArrayList<Trigram> trigramsArray) {
+    public HashSet<String> createSugg(ArrayList<Trigram> wordTrigrams) {
         HashSet<String> wordSugg = new HashSet<>();
         ArrayList<String> suggCombo; //stores substrings from combining suggestions - done to find corrections for deletion errors
         tempArr = new ArrayList<String>();
-        for (int i = 0; i < trigramsArray.size(); i++) {
-            Trigram trig = trigramsArray.get(i);
+        for (int i = 0; i < wordTrigrams.size(); i++) {
+            Trigram trig = wordTrigrams.get(i);
             ArrayList<String> suggestedTrigs = trig.getSugg();
             int size = suggestedTrigs.size();
 
