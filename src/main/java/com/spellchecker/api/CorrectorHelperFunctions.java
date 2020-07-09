@@ -12,7 +12,18 @@ import java.util.Locale;
  */
 
 public class CorrectorHelperFunctions {
+    /**
+     *
+     * @param word
+     * It iterates through the chars of a word and checks case of each char.
+     * If the whole word is found to be capitalized, it changes the word to lowercase
+     * If only the first or a few of the letters in the word are capitalized,
+     * it only changes the first letter of the word to lowercase.
+     * @return word with custom lowercase rules applied
+     */
     public String custom_lowercase(String word) {
+        if (word.equals(word.toLowerCase())) return word;
+
         boolean upperCase = true;
         for (char c : word.toCharArray()) {
             if (!Character.isUpperCase(c)) {
