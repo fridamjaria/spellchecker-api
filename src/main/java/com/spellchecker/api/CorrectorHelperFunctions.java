@@ -1,6 +1,7 @@
 package com.spellchecker.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -45,6 +46,15 @@ public class CorrectorHelperFunctions {
      */
 
     ArrayList<Trigram> constructTrigrams(String word) {
+        switch(word.length()) {
+            case 1:
+                return new ArrayList<Trigram>(Arrays.asList(new Trigram(word + "xx")));
+            case 2:
+                return new ArrayList<Trigram>(Arrays.asList(new Trigram(word + "x")));
+            case 3:
+                return new ArrayList<Trigram>(Arrays.asList(new Trigram(word)));
+        }
+
         ArrayList<Trigram> array = new ArrayList<>();
         String tri = "";
 
