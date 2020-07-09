@@ -7,16 +7,16 @@ package com.spellchecker.api;
  */
 
 public class TriFreq implements Comparable<TriFreq>{
-	String tri = "";
-	int freq;
+	private String trigram;
+	private int freq;
 
-	TriFreq(String t) {
-		this.tri = t;
-		this.freq = 0;
+	TriFreq(String trigram, int freq) {
+		this.trigram = trigram;
+		this.freq = freq;
 	}
 
 	String getTri() {
-		return tri;
+		return trigram;
 	}
 
 	int getFreq() {
