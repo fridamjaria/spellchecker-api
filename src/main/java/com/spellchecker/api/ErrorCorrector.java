@@ -69,10 +69,10 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
                         String prevTri = wordTrigrams.get(index - 1).getTri();
 
                         if (trigramPairs.containsKey(prevTri)) { // if the previous trigObj is contained in pairs hashmap
-                            TriFreq tn = trigramPairs.get(prevTri); //grab the object containing all info for possible trigNextObj pairs
-                            ArrayList<String> nextTris = tn.getArray(); // also grab the array storing just the next trigram str
-                            HashMap<String, Integer> probNext = tn.getMap(); // and the map of next trigrams and their probabilities
-                            if (probNext.containsKey(trigram)) {
+                            ArrayList<TriFreq> triFreqArr = trigramPairs.get(prevTri); //grab the object containing all info for possible trigNextObj pairs
+                            ArrayList<String> nextTris = new ArrayList<>();
+                            triFreqArr.forEach(tf -> nextTris.add(tf.getTri())); // also grab the next trigrams from triFreq objects and store them in ArrayList
+                            if (nextTris.contains(trigram)) {
                                 trigObj.setSugg(nextTris);
                             }
                         }
