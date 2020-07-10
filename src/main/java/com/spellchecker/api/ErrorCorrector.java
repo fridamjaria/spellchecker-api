@@ -52,24 +52,10 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
     public HashSet<String> correct(String sword) {
         HashSet<String> suggestions = new HashSet<>();
         ArrayList<Trigram> wordTrigrams = null;
-            String word = custom_lowercase(sword);
+        String word = custom_lowercase(sword);
         wordTrigrams = constructTrigrams(word); // creates trigram of word and stores it in the wordTrigrams
 
-            // creates trigram of word and stores it in the wordTrigrams
-            switch(word.length()) {
-                case 1:
-                wordTrigrams = new ArrayList<>(Arrays.asList(new Trigram(word + "xx")));
-                break;
-                case 2:
-                wordTrigrams = new ArrayList<>(Arrays.asList(new Trigram(word + "x")));
-                break;
-                case 3:
-                wordTrigrams = new ArrayList<>(Arrays.asList(new Trigram(word)));
-                break;
-                default:
-                wordTrigrams = constructTrigrams(word);
-            }
-
+        try{
             // check the trigrams are correct from list of trigrams
             for (int index = 0; index < wordTrigrams.size(); index++) {
                 Trigram trigObj = wordTrigrams.get(index);
