@@ -3,6 +3,7 @@ package com.spellchecker.api;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -19,19 +20,9 @@ public class Probabilities {
         this.language = langauge;
     }
 
-    static boolean upperCase(String s) {
-        for (char c : s.toCharArray()) {
-            if (!Character.isUpperCase(c)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    // This method is broken...
-    public HashMap<String, TriNext> getProbMap() {
-        HashMap<String, TriNext> mapTri = new HashMap<>(); //hashmap to store TriNext object;
+    // Check if method is fixed...
+    public HashMap<String, ArrayList<TriFreq>> getProbMap() {
+        HashMap<String, ArrayList<TriFreq>> triPairsMap = new HashMap<>(); //hashmap to store trigram pairs and their frequencies
         try {
             //Set the langauge for which the probabilities is checked
             InputStream probs;
@@ -42,26 +33,26 @@ public class Probabilities {
             }
 
             BufferedReader probsReader = new BufferedReader(new InputStreamReader(probs));
-            //Load the wordlist
             String line = probsReader.readLine();
-            HashMap<String, Integer> map;  //hashmap to get frequency of a trigram
-            Scanner scTri;
-
+            Scanner scanner;
+            ArrayList<TriFreq> triFreqArr;
             while (line != null) {
-                map = new HashMap<>();
-                scTri = new Scanner(line);
-                while (scTri.hasNext()) {
-                    String tNext = scTri.next().trim();
-                    int freq = scTri.nextInt();
-                    map.put(tNext, freq);
+                scanner = new Scanner(line);
+                String tri = scanner.next();
+                triFreqArr = new  ArrayList<TriFreq>();
+                while (scanner.hasNext()) {
+                    String triPair = scanner.next().trim();
+                    int triPairFreq = scanner.nextInt();
+                    triFreqArr.add(new TriFreq(triPair, triPairFreq));
                 }
-                scTri.close();
+                triPairsMap.put(tri, triFreqArr);
+                scanner.close();
                 line = probsReader.readLine();
             }
             probs.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return mapTri;
+        return triPairsMap;
     }
 }

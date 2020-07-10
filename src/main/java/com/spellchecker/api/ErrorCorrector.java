@@ -22,7 +22,7 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
      * trigrams that they can be paired with (and the frequency
      * that they were paired together in the corpus)
      */
-    HashMap<String, TriNext> trigramPairs;
+    HashMap<String, ArrayList<TriFreq>> trigramPairs;
     HashSet<String> wordlist;
     BinarySearch BS;
     ArrayList<String> suggestions;
@@ -71,12 +71,11 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
             }
 
             // check the trigrams are correct from list of trigrams
-            for (int i = 0; i < wordTrigrams.size(); i++) {
-                Trigram trigObj = wordTrigrams.get(i);
+            for (int index = 0; index < wordTrigrams.size(); index++) {
+                Trigram trigObj = wordTrigrams.get(index);
                 String trigram = trigObj.getTri();
 
                 if (isValidTrigram(trigram)) {
-                    int index = wordTrigrams.indexOf(trigObj);
                     if (index != 0) {
                         trigObj.setAlt(); // what does this do??????? --- trigObj.alternatives is set to true, why?
 
@@ -84,7 +83,7 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
                         String prevTri = wordTrigrams.get(index - 1).getTri();
 
                         if (trigramPairs.containsKey(prevTri)) { // if the previous trigObj is contained in pairs hashmap
-                            TriNext tn = trigramPairs.get(prevTri); //grab the object containing all info for possible trigNextObj pairs
+                            TriFreq tn = trigramPairs.get(prevTri); //grab the object containing all info for possible trigNextObj pairs
                             ArrayList<String> nextTris = tn.getArray(); // also grab the array storing just the next trigram str
                             HashMap<String, Integer> probNext = tn.getMap(); // and the map of next trigrams and their probabilities
                             if (probNext.containsKey(trigram)) {
@@ -120,16 +119,16 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
                                 break;
                         }
 
-                        String newWord = transpose(i, temp, wordTrigrams, probabilityMap);
+                        String newWord = transpose(index, temp, wordTrigrams, probabilityMap);
                         if (!newWord.isEmpty() && wordlist.contains(newWord)) {
                             suggestions.add(newWord);
                             break;
                         }
                     } else if (count == 3) {
                         String temp = new StringBuilder().append(charArr[1]).append(charArr[0]).append(charArr[2]).toString();
-                        String newWord = transpose(i, temp, wordTrigrams, probabilityMap);
+                        String newWord = transpose(index, temp, wordTrigrams, probabilityMap);
                         temp = new StringBuilder().append(charArr[0]).append(charArr[2]).append(charArr[1]).toString();
-                        newWord = transpose(i, temp, wordTrigrams, probabilityMap);
+                        newWord = transpose(index, temp, wordTrigrams, probabilityMap);
                         if (!newWord.isEmpty() && wordlist.contains(newWord)) {
                             suggestions.add(newWord);
                         }
@@ -139,7 +138,7 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
                     }
 
                     ArrayList<String> targetArr = find(triArray, trigram);
-                    wordTrigrams.get(i).setSugg(targetArr);
+                    wordTrigrams.get(index).setSugg(targetArr);
                 }
             }
 
@@ -162,12 +161,12 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
         HashSet<String> wordSugg = new HashSet<>();
         ArrayList<String> suggCombo; //stores substrings from combining suggestions - done to find corrections for deletion errors
         tempArr = new ArrayList<String>();
-        for (int i = 0; i < wordTrigrams.size(); i++) {
-            Trigram trig = wordTrigrams.get(i);
+        for (int index = 0; index < wordTrigrams.size(); index++) {
+            Trigram trig = wordTrigrams.get(index);
             ArrayList<String> suggestedTrigs = trig.getSugg();
             int size = suggestedTrigs.size();
 
-            if (i == 0) {
+            if (index == 0) {
                 if (size == 0) { //if trigram is correct
                     tempArr.add(trig.getTri());
                 } else {
@@ -249,7 +248,7 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
                             }
 
                             for (int k = start; k <= end; k++) {
-                                if (i == 1) {
+                                if (index == 1) {
                                 }
                                 String combined_str = combine(str, sugg.get(k));
                                 if (!combined_str.isEmpty()) {
