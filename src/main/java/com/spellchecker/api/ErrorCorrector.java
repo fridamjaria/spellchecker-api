@@ -258,7 +258,7 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
     }
 
     private Boolean isValidTrigram(String trigram) {
-        return !probabilityMap.containsKey(trigram);
+        return probabilityMap.containsKey(trigram);
     }
 
 }

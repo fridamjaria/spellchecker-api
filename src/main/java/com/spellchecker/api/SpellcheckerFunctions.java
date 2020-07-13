@@ -30,7 +30,8 @@ public class SpellcheckerFunctions{
         HashMap<String, HashSet<String>> corrections = new HashMap<>();
 
         incorrect_words.forEach(word -> {
-            corrections.put(word, createSuggestions(word));
+            HashSet<String> suggestions = createSuggestions(word);
+            corrections.put(word, suggestions);
         });
 
         return corrections;

@@ -33,7 +33,7 @@ public class ErrorDetector {
         for(String word : words) {
             word = stripPunctuation(word);
 
-            if(!(word.length() < 3 || isInWordlist(word)) && isMispelled(word)){
+            if(!(word.length() < 3 || isInWordlist(word)) && !isMispelled(word)){
                 misspelledWords.add(word);
 
             }
@@ -59,11 +59,7 @@ public class ErrorDetector {
      * @returns word with any trailing punctuation stripped
      */
     private String stripPunctuation(String word){
-        if (!Character.isLetter(word.charAt(word.length()-1))) {
-            return word.substring(0,word.length()-1 );
-        }
-
-        return word;
+        return word.replaceAll("[^a-zA-Z0-9']", "");
     }
 
     /**
