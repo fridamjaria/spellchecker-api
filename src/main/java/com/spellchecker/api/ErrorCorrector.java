@@ -68,7 +68,7 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
                         String prevTri = wordTrigrams.get(index - 1).getTri();
 
                         if (trigramPairs.containsKey(prevTri)) { // if the previous trigObj is contained in pairs hashmap
-                            ArrayList<TriFreq> triFreqArr = trigramPairs.get(prevTri); //grab the object containing all info for possible trigNextObj pairs
+                            ArrayList<TriFreq> triFreqArr = trigramPairs.get(prevTri); // grab the object containing all info for possible trigNextObj pairs
                             ArrayList<String> nextTris = new ArrayList<>();
                             triFreqArr.forEach(tf -> nextTris.add(tf.getTri())); // also grab the next trigrams from triFreq objects and store them in ArrayList
                             if (nextTris.contains(trigram)) {
@@ -76,7 +76,7 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
                             }
                         }
                     }
-                } else { //if any trigram is found to be incorrectly spelt
+                } else { // if any trigram is found to be incorrectly spelt
                     char[] charArr = trigram.toCharArray();
                     int count = 0;
                     int start_index = 0;
@@ -88,7 +88,6 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
                             count++;
                             } else if (count == 1) count = 0;
                         }
-
 
                     if (count == 2) {
                         String temp = "";
@@ -152,7 +151,7 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
             int size = suggestedTrigs.size();
 
             if (index == 0) {
-                if (size == 0) { //if trigram is correct
+                if (size == 0) { // if trigram is correct
                     tempArr.add(trig.getTri());
                 } else {
                     for (String tri : suggestedTrigs) {
