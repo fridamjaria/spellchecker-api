@@ -33,9 +33,8 @@ public class ErrorDetector {
         for(String word : words) {
             word = stripPunctuation(word);
 
-            if(!(word.length() < 3 || isInWordlist(word)) && !isMispelled(word)){
+            if(!(word.length() < 3 || isInWordlist(word)) && isMispelled(word)){
                 misspelledWords.add(word);
-
             }
         };
 
@@ -81,28 +80,23 @@ public class ErrorDetector {
      *
      */
     private boolean isMispelled(String word) {
-        //Get trigrams of the word
         ArrayList<String> trigrams = wordTrigram(word);
-        boolean error = false;
         double frequency, threshold = 700;//Frequency for isiXhosa
 
-        //Set frequency for isiZulu
+        // sets frequency for isiZulu
         if(language.equalsIgnoreCase("isizulu")){
             threshold = 45;
         }
 
-        //calculate the probability of each trigram and check for correctness
+        // calculate the probability of each trigram and check for correctness
         for (String trigram : trigrams) {
             frequency = getFrequency(trigram);
             if (frequency < threshold) {
-                error = false; //the trigam is incorrect
-                break; //No neeed to continue iterations
-            } else {
-                error = true;
+                return true; // trigam is incorrect, therefore word is mispelled
             }
         }
 
-        return error;
+        return false;
     }
 
     /**
