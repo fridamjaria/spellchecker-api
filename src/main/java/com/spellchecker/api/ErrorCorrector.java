@@ -39,7 +39,7 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
 
     public void initialize(String language) {
         Probabilities prob = new Probabilities(language);
-        trigramPairs = prob.getProbMap();
+        trigramPairs = prob.getProbMap(probabilityMap);
         BS = new BinarySearch();
     }
 
@@ -50,9 +50,8 @@ public class ErrorCorrector extends CorrectorHelperFunctions{
      */
     public HashSet<String> correct(String sword) {
         HashSet<String> suggestions = new HashSet<>();
-        ArrayList<Trigram> wordTrigrams = null;
         String word = custom_lowercase(sword);
-        wordTrigrams = constructTrigrams(word); // creates trigram of word and stores it in the wordTrigrams
+        ArrayList<Trigram> wordTrigrams = constructTrigrams(word); // creates trigram of word and stores it in the wordTrigrams
 
         try{
             // check the trigrams are correct from list of trigrams

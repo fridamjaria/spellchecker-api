@@ -21,7 +21,7 @@ public class Probabilities {
     }
 
     // Check if method is fixed...
-    public HashMap<String, ArrayList<TriFreq>> getProbMap() {
+    public HashMap<String, ArrayList<TriFreq>> getProbMap(HashMap<String, Integer> probabilityMap) {
         HashMap<String, ArrayList<TriFreq>> triPairsMap = new HashMap<>(); //hashmap to store trigram pairs and their frequencies
         try {
             //Set the langauge for which the probabilities is checked
@@ -43,9 +43,10 @@ public class Probabilities {
                 while (scanner.hasNext()) {
                     String triPair = scanner.next().trim();
                     int triPairFreq = scanner.nextInt();
-                    triFreqArr.add(new TriFreq(triPair, triPairFreq));
+                    if(probabilityMap.containsKey(triPair)) triFreqArr.add(new TriFreq(triPair, triPairFreq));
                 }
-                triPairsMap.put(tri, triFreqArr);
+
+                if(probabilityMap.containsKey(tri)) triPairsMap.put(tri, triFreqArr);
                 scanner.close();
                 line = probsReader.readLine();
             }
