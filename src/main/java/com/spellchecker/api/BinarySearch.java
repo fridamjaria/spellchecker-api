@@ -10,127 +10,67 @@ import java.util.ArrayList;
 
 public final class BinarySearch {
 	int findStart(ArrayList<String> arr, String tri, int low, int high) {
-		String sub = tri.substring(tri.length()-2);
+		String sub = tri.substring(1);
+		int mid;
+		String tri2;
+		String sub2;
+		int compare;
+		String prevStr;
+
 		while(high >= low) {
-			int mid = (low + high) / 2;
-			String tri2 = arr.get(mid);
-			String sub2 = tri2.substring(0, 2);
-			int compare = sub.compareTo(sub2);
-			if(compare < 0) {
-				high = mid - 1;
-			}
-			else if(compare == 0){ //if the strings are equal;
-				if(mid == 0)
+			mid = (low + high) / 2;
+			tri2 = arr.get(mid);
+			sub2 = tri2.substring(0, 2);
+			compare = sub.compareTo(sub2);
+
+			if(compare == 0){ //if the strings are equal;
+				if(mid == 0) return mid;
+
+				prevStr = arr.get(mid-1);
+				if(!sub.equals(prevStr.substring(0, 2))) { //if the previous element in the arraylist != sub
 					return mid;
-				else {
-					String prev = arr.get(mid-1);
-					if(sub.equals(prev.substring(0, 2))) { //if the previous element in the arraylist == sub
-						high = mid-1;
-					}
-					else {
-						return mid;
-					}
 				}
-			}
-			else {
+
+				high = mid-1;
+			} else if(compare < 0) {
+				high = mid - 1;
+			} else {
 				low = mid + 1;
 			}
 		}
-		return -1;
+
+		return -1; // no start found
 	}
 
 	int findEnd(ArrayList<String> arr, String tri, int low, int high) {
-		String sub = tri.substring(tri.length()-2);
-		while(high >= low) {
+		String sub = tri.substring(1);
+		int mid;
+		String tri2;
+		String sub2;
+		int compare;
+		String nextStr;
 
-			int mid = (low + high) / 2;
-			String tri2 = arr.get(mid);
-			String sub2 = tri2.substring(0, 2);
-			int compare = sub.compareTo(sub2);
-			if(compare < 0) {
+		while(high >= low) {
+			mid = (low + high) / 2;
+			tri2 = arr.get(mid);
+			sub2 = tri2.substring(0, 2);
+			compare = sub.compareTo(sub2);
+
+			if(compare == 0){ //if the strings are equal;
+				if(mid == arr.size()-1) return mid;
+
+				nextStr = arr.get(mid+1);
+				if(!sub.equals(nextStr.substring(0, 2))) { //if the next element in the arraylist != sub
+					return mid;
+				}
+				low = mid + 1;
+			} else if(compare < 0) {
 				high = mid -1;
-			}
-			else if(compare == 0){ //if the strings are equal;
-
-				if(mid == arr.size()-1)
-					return mid;
-				else {
-					String prev = arr.get(mid+1);
-					if(sub.equals(prev.substring(0, 2))) { //if the previous element in the arraylist == sub
-						low = mid + 1;
-					}
-					else {
-						return mid;
-					}
-				}
-			}
-			else {
+			} else {
 				low = mid + 1;
 			}
 		}
+
 		return -1;
-
-	}
-	int findStartAlt(ArrayList<String> arr, String tri, int low, int high) {
-		String sub = tri.substring(0, 2);
-		while(high >= low) {
-			int mid = (low + high) / 2;
-			String tri2 = arr.get(mid);
-			String sub2 = tri2.substring(tri2.length() - 2);
-			int compare = sub.compareTo(sub2);
-			if(compare < 0) {
-				high = mid - 1;
-			}
-			else if(compare == 0){ //if the strings are equal;
-				if(mid == 0)
-					return mid;
-				else {
-					String prev = arr.get(mid-1);
-					if(sub.equals(prev.substring(prev.length()-2))) { //if the previous element in the arraylist == sub
-						high = mid-1;
-					}
-					else {
-						return mid;
-					}
-				}
-			}
-			else {
-				low = mid + 1;
-			}
-		}
-		return -1;
-	}
-
-	int findEndAlt(ArrayList<String> arr, String tri, int low, int high) {
-		String sub = tri.substring(0, 2);
-		while(high >= low) {
-
-			int mid = (low + high) / 2;
-			String tri2 = arr.get(mid);
-			String sub2 = tri2.substring(tri2.length()-2);
-			int compare = sub.compareTo(sub2);
-			if(compare < 0) {
-				high = mid -1;
-			}
-			else if(compare == 0){ //if the strings are equal;
-
-				if(mid == arr.size()-1)
-					return mid;
-				else {
-					String prev = arr.get(mid+1);
-					if(sub.equals(prev.substring(prev.length()-2))) { //if the previous element in the arraylist == sub
-						low = mid + 1;
-					}
-					else {
-						return mid;
-					}
-				}
-			}
-			else {
-				low = mid + 1;
-			}
-		}
-		return -1;
-
 	}
 }
