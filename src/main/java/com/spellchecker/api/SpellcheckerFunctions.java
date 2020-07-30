@@ -1,7 +1,11 @@
 package com.spellchecker.api;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Copyright 2020 fridamjaria
@@ -40,14 +44,20 @@ public class SpellcheckerFunctions{
      * Performs error detection and error correction on text body
      * returns HashMap of incorrect words and their respective correction suggestions
      */
-    public HashMap<String, HashSet<String>> check(String[] text) {
+    public HashMap<String, List<String>> check(String[] text) {
         ErrorDetector detector = new ErrorDetector(language, initializer.probabilityMap, initializer.wordlist);
         HashSet<String> incorrect_words = detector.detectErrors(text);
-        HashMap<String, HashSet<String>> corrections = new HashMap<>();
+        HashMap<String, List<String>> corrections = new HashMap<>();
 
         incorrect_words.forEach(word -> {
             HashSet<String> suggestions = createSuggestions(word);
-            corrections.put(word, suggestions);
+            List<String> list = new ArrayList<String>(suggestions);
+            int size = list.size();
+            if(size > 1) {
+                Collections.sort(list, new DLRanking(word));
+                list = list.subList(0, Math.min(size-1, 5));
+            }
+            corrections.put(word, list);
         });
 
         return corrections;
@@ -60,5 +70,20 @@ public class SpellcheckerFunctions{
     private HashSet<String> createSuggestions(String word){
         ErrorCorrector corrector = new ErrorCorrector(initializer.wordlist, initializer.probabilityMap, initializer.nextTrigramPairs);
         return corrector.correct(word);
+    }
+
+    class DLRanking implements Comparator<String> {
+        private String word;
+        private DamerauLevenshtein DL;
+
+        public DLRanking(String word) {
+            this.DL = new DamerauLevenshtein(1, 1, 1, 2);
+            this.word = word;
+        }
+
+        public int compare(String a, String b)
+        {
+            return DL.execute(word, a) - DL.execute(word, b);
+        }
     }
 }
