@@ -9,18 +9,18 @@ import java.util.ArrayList;
  */
 
 public final class BinarySearch {
-	int findStart(ArrayList<String> arr, String tri, int low, int high) {
-		String sub = tri.substring(1);
+	int findStart(ArrayList<String> arr, String word, int low, int high) {
+		String sub = word.substring(word.length()-2);
 		int mid;
-		String tri2;
+		String word2;
 		String sub2;
 		int compare;
 		String prevStr;
 
 		while(high >= low) {
 			mid = (low + high) / 2;
-			tri2 = arr.get(mid);
-			sub2 = tri2.substring(0, 2);
+			word2 = arr.get(mid);
+			sub2 = word2.substring(0, 2);
 			compare = sub.compareTo(sub2);
 
 			if(compare == 0){ //if the strings are equal;
@@ -42,18 +42,18 @@ public final class BinarySearch {
 		return -1; // no start found
 	}
 
-	int findEnd(ArrayList<String> arr, String tri, int low, int high) {
-		String sub = tri.substring(1);
+	int findEnd(ArrayList<String> arr, String word, int low, int high) {
+		String sub = word.substring(word.length()-2);
 		int mid;
-		String tri2;
+		String word2;
 		String sub2;
 		int compare;
 		String nextStr;
 
 		while(high >= low) {
 			mid = (low + high) / 2;
-			tri2 = arr.get(mid);
-			sub2 = tri2.substring(0, 2);
+			word2 = arr.get(mid);
+			sub2 = word2.substring(0, 2);
 			compare = sub.compareTo(sub2);
 
 			if(compare == 0){ //if the strings are equal;
