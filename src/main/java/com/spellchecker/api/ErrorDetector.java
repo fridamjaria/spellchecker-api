@@ -97,11 +97,12 @@ public class ErrorDetector {
      */
     private boolean isMispelled(String word) {
         ArrayList<String> trigrams = wordTrigram(word);
-        double frequency, threshold = 700;//Frequency for isiXhosa
+        int frequency;
+        int threshold = 700;//Frequency for isiXhosa
 
         // sets frequency for isiZulu
         if(language.equalsIgnoreCase("isizulu")){
-            threshold = 45;
+            threshold = 100;
         }
 
         // calculate the probability of each trigram and check for correctness

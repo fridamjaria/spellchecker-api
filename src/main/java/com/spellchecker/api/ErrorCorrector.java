@@ -3,6 +3,7 @@ package com.spellchecker.api;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Copyright 2020 fridamjaria
@@ -26,254 +27,113 @@ import java.util.HashSet;
  *
  */
 
-public class ErrorCorrector extends CorrectorHelperFunctions{
+public class ErrorCorrector extends CorrectorHelperFunctions {
 
-    Trigram trig;
-    ArrayList<String> tempArr;
-    String[] triArray;
-    HashMap<String, Integer> probabilityMap;
-    /*
-     * This is a hashmap containing all trigrams in probabilityMap and other
-     * trigrams that they can be paired with (and the frequency
-     * that they were paired together in the corpus)
-     */
-    HashMap<String, ArrayList<TriFreq>> trigramPairs;
-    HashSet<String> wordlist;
-    BinarySearch BS;
-    ArrayList<String> suggestions;
-    boolean alt;
-    String language;
+  private HashSet<String> wordlist;
+  private Set<String> correctTrigrams;
+  private HashMap<String, ArrayList<String>> trigramPairs;
+  private BinarySearch BS;
 
-    public ErrorCorrector(String language, HashSet<String> wordlist, HashMap<String, Integer> probabilityMap){
-        this.language = language;
-        this.wordlist = wordlist;
-        this.probabilityMap = probabilityMap;
-        this.triArray = probabilityMap.keySet().toArray(new String[probabilityMap.size()]);
+  public ErrorCorrector(HashSet<String> wordlist, HashMap<String, Integer> probabilityMap, HashMap<String, ArrayList<String>> trigramPairs) {
+    this.wordlist = wordlist;
+    this.trigramPairs = trigramPairs;
+    this.correctTrigrams = probabilityMap.keySet();
+    this.BS = new BinarySearch();
+  }
 
-        initialize(language);
-    }
+  /**
+   *
+   * @param incorrectWord
+   * @return set of corrections for misspelled word
+   */
+  public HashSet<String> correct(String incorrectWord) {
+    HashSet<String> suggestions = new HashSet<>();
+    ArrayList<Trigram> wordTrigrams = constructTrigrams(customLowercase(incorrectWord));
+    ArrayList<String> alternatives;
+    int size = wordTrigrams.size();
 
-    public void initialize(String language) {
-        Probabilities prob = new Probabilities(language);
-        trigramPairs = prob.getProbMap(probabilityMap);
-        BS = new BinarySearch();
-    }
+    for(int index=0; index < size; index++) {
+      Trigram trigram = wordTrigrams.get(index);
+      String triStr = trigram.getTri();
+      if(!correctTrigrams.contains(triStr)){ // find correct trigrams for incorrectly spelled trigrams
+        alternatives = findAlternatives(correctTrigrams, triStr);
+        if(alternatives.isEmpty()) return suggestions;
 
-    /**
-     *
-     * @param sword
-     * @return set of corrections for given word
-     */
-    public HashSet<String> correct(String sword) {
-        HashSet<String> suggestions = new HashSet<>();
-        String word = custom_lowercase(sword);
-        ArrayList<Trigram> wordTrigrams = constructTrigrams(word); // creates trigram of word and stores it in the wordTrigrams
+        if(trigram.getSugg().isEmpty()) trigram.setSugg(alternatives);
+      } else if(index < size-1){ // set suggestions to equal all probable next trigrams for correctly spelled trigrams
+        alternatives = trigramPairs.get(triStr);
+        if(alternatives != null) {
+          Trigram nextTrigram = wordTrigrams.get(index+1);
+          if(correctTrigrams.contains(nextTrigram.getTri())) nextTrigram.setSugg(alternatives);
+        } else {
+          alternatives = findAlternatives(correctTrigrams, triStr);
+          if(alternatives.isEmpty()) return suggestions;
 
-        try{
-            // check the trigrams are correct from list of trigrams
-            for (int index = 0; index < wordTrigrams.size(); index++) {
-                Trigram trigObj = wordTrigrams.get(index);
-                String trigram = trigObj.getTri();
-
-                if (isValidTrigram(trigram)) {
-                    if (index != 0) {
-                        trigObj.setAlt(); // what does this do??????? --- trigObj.alternatives is set to true, why?
-
-                        // Grab the previous trigObj to this current trigObj
-                        String prevTri = wordTrigrams.get(index - 1).getTri();
-
-                        if (trigramPairs.containsKey(prevTri)) { // if the previous trigObj is contained in pairs hashmap
-                            ArrayList<TriFreq> triFreqArr = trigramPairs.get(prevTri); // grab the object containing all info for possible trigNextObj pairs
-                            ArrayList<String> nextTris = new ArrayList<>();
-                            triFreqArr.forEach(tf -> nextTris.add(tf.getTri())); // also grab the next trigrams from triFreq objects and store them in ArrayList
-                            if (nextTris.contains(trigram)) {
-                                trigObj.setSugg(nextTris);
-                            }
-                        }
-                    }
-                } else { // if any trigram is found to be incorrectly spelt
-                    char[] charArr = trigram.toCharArray();
-                    int count = 0;
-                    int start_index = 0;
-                    for (int a = 0; a < charArr.length; a++) {
-                        char c = charArr[a];
-                        if ("AEIOUaeiou".indexOf(c) == -1) {
-                            if (count == 0) {
-                                start_index = a;
-                            count++;
-                            } else if (count == 1) count = 0;
-                        }
-
-                    if (count == 2) {
-                        String temp = "";
-                        switch (start_index) {
-                            case 0:
-                                temp = Character.toString(charArr[1]) + Character.toString(charArr[0]) + Character.toString(charArr[2]);
-                                break;
-                            case 1:
-                                temp = Character.toString(charArr[0]) + Character.toString(charArr[2]) + Character.toString(charArr[1]);
-                                break;
-                            default:
-                                System.out.println("There's an error in the code! start_index is > 1");
-                                break;
-                        }
-
-                        String newWord = transpose(index, temp, wordTrigrams, probabilityMap);
-                        if (!newWord.isEmpty() && wordlist.contains(newWord)) {
-                            suggestions.add(newWord);
-                            break;
-                        }
-                    } else if (count == 3) {
-                        String temp = new StringBuilder().append(charArr[1]).append(charArr[0]).append(charArr[2]).toString();
-                        String newWord = transpose(index, temp, wordTrigrams, probabilityMap);
-                        temp = new StringBuilder().append(charArr[0]).append(charArr[2]).append(charArr[1]).toString();
-                        newWord = transpose(index, temp, wordTrigrams, probabilityMap);
-                        if (!newWord.isEmpty() && wordlist.contains(newWord)) {
-                            suggestions.add(newWord);
-                        }
-                        if (!suggestions.isEmpty()) {
-                            break;
-                        }
-                    }
-
-                    ArrayList<String> targetArr = find(triArray, trigram);
-                    wordTrigrams.get(index).setSugg(targetArr);
-                }
-            }
-
-            if (suggestions.isEmpty() && !alt) {
-                suggestions = createSugg(wordTrigrams);
-
-            }
-        }} catch (Exception e) {
-            e.printStackTrace();
+          trigram.setSugg(alternatives);
         }
-        return suggestions;
+      }
+
+      if(trigram.getSugg().isEmpty()){
+        ArrayList<String> array = new ArrayList<>();
+        array.add(triStr);
+        trigram.setSugg(array);
+      }
     }
 
-    /**
-     *
-     * @param wordTrigrams
-     * @return Set of candidate corrections for misspelled word
-     */
-    public HashSet<String> createSugg(ArrayList<Trigram> wordTrigrams) {
-        HashSet<String> wordSugg = new HashSet<>();
-        ArrayList<String> suggCombo; //stores substrings from combining suggestions - done to find corrections for deletion errors
-        tempArr = new ArrayList<String>();
-        for (int index = 0; index < wordTrigrams.size(); index++) {
-            Trigram trig = wordTrigrams.get(index);
-            ArrayList<String> suggestedTrigs = trig.getSugg();
-            int size = suggestedTrigs.size();
+    suggestions = createSuggestions(wordTrigrams);
 
-            if (index == 0) {
-                if (size == 0) { // if trigram is correct
-                    tempArr.add(trig.getTri());
-                } else {
-                    for (String tri : suggestedTrigs) {
-                        tempArr.add(tri);
-                    }
+    return suggestions;
 
-                    suggCombo = combineSugg(suggestedTrigs);
-                    if (!suggCombo.isEmpty()) {
-                        for (String s : suggCombo) {
-                            tempArr.add(s);
-                        }
-                    }
+  }
 
-                    for (String s : tempArr) {
-                        if (wordlist.contains(s) && s.length() > 3) wordSugg.add(s);
-                    }
-                }
+  private HashSet<String> createSuggestions(ArrayList<Trigram> trigrams) {
+    ArrayList<String> array = new ArrayList<>();
+    ArrayList<String> combinedSugg = new ArrayList<>();
+    HashSet<String> suggestions = new HashSet<>();
+    ArrayList<String> suggestions2;
 
-            } else {
-                int tempSize = tempArr.size();
-                String tri = trig.getTri();
-                if (suggestedTrigs.size() == 0) { //if trigram is correct
-                    for (int j = 0; j < tempSize; j++) {
-                        String str = tempArr.get(j);
-                        String combined_str = combine(str, tri);
-                        if (!combined_str.isEmpty()) {
-                            tempArr.add(combined_str);
-                            //check if combined_str is in the wordlist, is it is store it as a suggestion
-                            if (wordlist.contains(combined_str)) {
-                                if (!wordSugg.contains(combined_str)) {
-                                    wordSugg.add(combined_str);
-                                }
-                            }
-                        }
-                    }
-                } else { //if trigram is incorrect
-                    //create combinations from suggestions and then combine these with strings in tempArr
-                    suggCombo = combineSugg(trig.getSugg());
-                    if (!suggCombo.isEmpty()) {
-                        int len = suggCombo.size() - 1;
-                        for (int j = 0; j < tempSize; j++) {
-                            String str = tempArr.get(j);
+    for (int index = 0; index < trigrams.size(); index++) {
+      if (index == 0) {
+        combinedSugg = trigrams.get(index).getSugg();
+        continue;
+      } else {
+        suggestions2 = trigrams.get(index).getSugg();
+      }
 
-                            int start = BS.findStart(suggCombo, str, 0, len);
-                            if (!(start < 0)) {
-                                int end = BS.findEnd(suggCombo, str, start, len);
-                                if (end < 0) {
-                                    System.out.println("Something wrong with suggCombo from createSugg method.");
-                                    System.exit(-1);
-                                }
+      for(String str : combinedSugg) {
+        if(suggestions2.size() < 10) {
+          for(String sugg : suggestions2){
+            String combinedStr = combine(str, sugg);
+            if(!combinedStr.isEmpty()) array.add(combinedStr);
+          }
+        } else {
+          int size = suggestions2.size();
+          int start = BS.findStart(suggestions2, str, 0, size-1);
 
-                                for (int k = start; k <= end; k++) {
-                                    String combined_str = combine(str, suggCombo.get(k));
+          if(start == -1){
+            if(wordlist.contains(str) && str.length() > 3) suggestions.add(str);
+            continue;
+          }
 
-                                    if (!combined_str.isEmpty()) {
-                                        tempArr.add(combined_str);
-                                        if (wordlist.contains(combined_str)) {
-                                            if (!wordSugg.contains(combined_str)) {
-                                                wordSugg.add(combined_str);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+          int end = BS.findEnd(suggestions2, str, start, size-1);
 
-                    //combine strings in tempArr with suggestions from trig.suggestions
-                    ArrayList<String> sugg = trig.getSugg();
-                    for (int j = 0; j < tempSize; j++) {
-                        String str = tempArr.get(j);
-                        int start = BS.findStart(sugg, str, 0, size - 1);
-                        if (!(start < 0)) {
-                            int end = BS.findEnd(sugg, str, start, size - 1);
-                            if (end < 0) {
-                                System.out.println("Something wrong with suggCombo from createSugg method.");
-                                System.exit(0);
-                            }
-
-                            for (int k = start; k <= end; k++) {
-                                if (index == 1) {
-                                }
-                                String combined_str = combine(str, sugg.get(k));
-                                if (!combined_str.isEmpty()) {
-                                    tempArr.add(combined_str);
-                                    if (wordlist.contains(combined_str)) {
-                                        if (!wordSugg.contains(combined_str)) {
-                                            wordSugg.add(combined_str);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                //remove strings that combinations have already been done on from tempArr
-                for (int m = 0; m < tempSize; m++) {
-                    tempArr.remove(0);
-                }
-            }
+          for (int i = start; i <= end; i++){ //O(logn)
+            String combinedStr = combine(str, suggestions2.get(i));
+            if(!combinedStr.isEmpty()) array.add(combinedStr);
+          }
         }
-        return wordSugg;
+      }
+
+      if(!array.isEmpty()){
+        combinedSugg = array;
+        array = new ArrayList<>();
+      }
+
+      for(String word : combinedSugg) {
+        if(wordlist.contains(word)) suggestions.add(word);
+      }
     }
 
-    private Boolean isValidTrigram(String trigram) {
-        return probabilityMap.containsKey(trigram);
-    }
-
+    return suggestions;
+  }
 }
