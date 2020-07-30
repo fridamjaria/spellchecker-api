@@ -58,7 +58,7 @@ public class SpellcheckerFunctions{
      * returns: a set of suggestions for given word
      */
     private HashSet<String> createSuggestions(String word){
-        ErrorCorrector corrector = new ErrorCorrector(language, initializer.wordlist, initializer.probabilityMap);
+        ErrorCorrector corrector = new ErrorCorrector(initializer.wordlist, initializer.probabilityMap, initializer.nextTrigramPairs);
         return corrector.correct(word);
     }
 }

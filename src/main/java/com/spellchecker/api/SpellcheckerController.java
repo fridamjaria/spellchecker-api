@@ -37,13 +37,7 @@ public class SpellcheckerController {
     public HashMap<String, HashSet<String>> spellcheck(@RequestBody String userText) {
         SpellcheckerFunctions functions = new SpellcheckerFunctions("isizulu");
         String[] words;
-        words = userText.split(" ");
+        words = userText.split("\\s+");
         return functions.check(words);
     }
-
-    @PostMapping("/save-words")
-    public boolean saveWords(){
-        return true;
-    }
-
 }
