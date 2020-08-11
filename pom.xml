@@ -5,17 +5,17 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.0.RELEASE</version>
+		<version>2.3.2.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.spellchecker</groupId>
-	<artifactId>api</artifactId>
+	<groupId>com.spellchecker.api</groupId>
+	<artifactId>spellchecker</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>api</name>
-	<description>Spellchecker api</description>
+	<name>spellchecker</name>
+	<description>spellchecker API project</description>
 
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>11</java.version>
 	</properties>
 
 	<dependencies>
@@ -35,20 +35,19 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
-		<dependency>
-			<groupId>com.google.firebase</groupId>
-			<artifactId>firebase-admin</artifactId>
-			<version>6.8.1</version>
-		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.5.1</version>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+            </configuration>
+        </plugin>
 		</plugins>
 	</build>
 
