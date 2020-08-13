@@ -1,8 +1,17 @@
 package com.spellchecker.api;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,11 +42,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SpellcheckerController {
 
+    @Value("${TARGET:World}")
+    String target;
+
+    @GetMapping("/")
+    String success() {
+      return "Hello " + target + "!";
+    }
+
+    @CrossOrigin
     @PostMapping("/spellcheck")
-    public HashMap<String, List<String>> spellcheck(@RequestBody String userText) {
+    ResponseEntity<HashMap<String, List<String>>> spellcheck(@RequestBody String data) {
         SpellcheckerFunctions functions = new SpellcheckerFunctions("isizulu");
+        JSONObject requestBody = new JSONObject(data);
         String[] words;
-        words = userText.split("\\s+");
-        return functions.check(words);
+        words = requestBody.getString("userText").split("\\s+");
+        HashMap<String, List<String>> suggestedCorrections = functions.check(words);
+        ResponseEntity<HashMap<String, List<String>>> response =
+        new ResponseEntity<HashMap<String, List<String>>>(suggestedCorrections, HttpStatus.OK);
+        return response;
     }
 }
