@@ -2,6 +2,9 @@ package com.spellchecker.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Copyright 2020 fridamjaria
@@ -22,6 +25,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  *
  * @author Nthabi Mashiane
+ * @author fridamjaria
  *
  */
 
@@ -30,5 +34,16 @@ public class SpellcheckerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpellcheckerApplication.class, args);
+	}
+
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**")
+				.allowedOrigins("*");
+			}
+		};
 	}
 }
