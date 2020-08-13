@@ -17,7 +17,9 @@ RUN mvn package -DskipTests
 FROM adoptopenjdk/openjdk11:jdk-11.0.8_10-alpine-slim
 
 # Copy the jar to the production image from the builder stage.
-COPY --from=builder /app/target/spellchecker-*.jar /spellchecker.jar
+COPY --from=builder /app/target/spellchecker-api-*.jar /spellchecker-api.jar
+
+EXPOSE 8080
 
 # Run the web service on container startup.
-CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/spellchecker.jar"]
+CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dserver.port=8080", "-jar", "/spellchecker-api.jar"]
